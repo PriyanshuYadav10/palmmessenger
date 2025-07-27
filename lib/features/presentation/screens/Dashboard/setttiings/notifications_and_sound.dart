@@ -17,14 +17,14 @@ class NotificationAndSoundScreen extends StatefulWidget {
 
 class _NotificationAndSoundScreenState
     extends State<NotificationAndSoundScreen> {
-  bool conversationTones = true;
-  bool reminders = true;
-  bool highPriorityMessages = true;
-  bool reactionMessages = true;
+  bool conversationTones = false;
+  bool reminders = false;
+  bool highPriorityMessages = false;
+  bool reactionMessages = false;
   bool highPriorityGroups = false;
   bool reactionGroups = false;
-  bool statusReactions = true;
-  bool homeScreenCount = true;
+  bool statusReactions = false;
+  bool homeScreenCount = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

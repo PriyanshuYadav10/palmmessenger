@@ -4,7 +4,9 @@ import 'package:palmmessenger/config/theme/app_themes.dart';
 import 'package:palmmessenger/config/theme/spaces.dart';
 import 'package:palmmessenger/config/theme/textstyles.dart';
 import 'package:palmmessenger/core/constants/images.dart';
+import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/chat_settings.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/linked_devices.dart';
+import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/lists.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/my_account.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/notifications_and_sound.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/privacy_and_security.dart';
@@ -132,8 +134,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Get.to(BroadcastMessageScreen());
                         } else if (index == 2) {
                           Get.to(MyAccountScreen());
+                        } else if (index == 3) {
+                          Get.to(ListScreen());
                         } else if (index == 4) {
                           Get.to(PrivacyAndSecurityScreen());
+                        } else if (index == 5) {
+                          Get.to(ChatSettingsScreen());
                         } else if (index == 6) {
                           Get.to(NotificationAndSoundScreen());
                         } else if (index == 7) {

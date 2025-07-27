@@ -11,6 +11,12 @@ import 'package:provider/provider.dart';
 
 
 Future<void> main() async {
+  final plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+
+
+
+  print('plainText  $plainText');
+
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
   runApp(OKToast(

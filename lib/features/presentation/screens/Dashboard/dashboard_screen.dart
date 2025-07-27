@@ -55,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         margin: EdgeInsets.all(16),
         padding: EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF0C0A2D), // dark translucent background
+          // color:  Colors.transparent, // dark translucent background
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.blueAccent, width: 1.5),
         ),

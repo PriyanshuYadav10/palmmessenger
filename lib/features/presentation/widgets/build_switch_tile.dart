@@ -8,6 +8,7 @@ Widget buildSwitchTile({
   required ValueChanged<bool> onChanged,
 }) {
   return SwitchListTile(
+    contentPadding: EdgeInsets.symmetric(horizontal: 15),
     title: Text(
       title,
       style: const TextStyle(color: ColorResources.whiteColor),
@@ -24,6 +25,5 @@ Widget buildSwitchTile({
     activeColor: ColorResources.thirdColor,
     inactiveTrackColor: Colors.transparent,
     inactiveThumbColor: ColorResources.thirdColor,
-    
   );
 }

@@ -1,4 +1,4 @@
-package com.one.qedic
+package com.example.palmmessenger
 
 import io.flutter.embedding.android.FlutterActivity
 
