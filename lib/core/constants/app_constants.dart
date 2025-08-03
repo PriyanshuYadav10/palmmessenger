@@ -7,5 +7,7 @@ class AppConstants {
   static const String createOrder = "/billing/create-order";
   static const String updateProfile = "/user/update-profile";
   static const String profileDetails = "/user/profile-details";
+  static const String publicKey = "/user/public-key";
+  static const String searchContact = "/user/search";
 
 }

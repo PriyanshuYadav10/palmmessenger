@@ -1,26 +1,25 @@
-class UserProfileDataModel {
-  bool? success;
-  Profile? profile;
+class publicKeyAddModel {
+  String? message;
+  User? user;
 
-  UserProfileDataModel({this.success, this.profile});
+  publicKeyAddModel({this.message, this.user});
 
-  UserProfileDataModel.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
-    profile =
-    json['profile'] != null ? new Profile.fromJson(json['profile']) : null;
+  publicKeyAddModel.fromJson(Map<String, dynamic> json) {
+    message = json['message'];
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    if (this.profile != null) {
-      data['profile'] = this.profile!.toJson();
+    data['message'] = this.message;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
     }
     return data;
   }
 }
 
-class Profile {
+class User {
   String? sId;
   String? phoneNo;
   bool? isVerified;
@@ -35,7 +34,7 @@ class Profile {
   String? profilePicture;
   String? publicKey;
 
-  Profile(
+  User(
       {this.sId,
         this.phoneNo,
         this.isVerified,
@@ -48,10 +47,9 @@ class Profile {
         this.bio,
         this.name,
         this.profilePicture,
-        this.publicKey,
-      });
+        this.publicKey});
 
-  Profile.fromJson(Map<String, dynamic> json) {
+  User.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     phoneNo = json['phoneNo'];
     isVerified = json['isVerified'];

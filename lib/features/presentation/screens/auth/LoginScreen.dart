@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       accessToken=authProvider.palmIdModel!.accessToken.toString();
       showAlertSuccess(authProvider.message, context);
-      Get.offAll(DashboardScreen());
+      Get.offAll(DashboardScreen(),);
     }else{
       showAlertError(authProvider.message, context);
     }

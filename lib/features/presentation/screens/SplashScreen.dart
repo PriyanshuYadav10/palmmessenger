@@ -1,14 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart';
 import 'package:palmmessenger/config/theme/spaces.dart';
 import 'package:palmmessenger/config/theme/textstyles.dart';
 import 'package:palmmessenger/features/presentation/screens/auth/LoginScreen.dart';
 import 'package:palmmessenger/features/presentation/utility/global.dart';
 import 'package:palmmessenger/features/presentation/utility/gradient_text.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../config/theme/app_themes.dart';
 import '../../../core/constants/images.dart';
+import '../../data/encryption/rsa_helper.dart';
+import '../../data/encryption/rsa_key_helper.dart';
+import '../../data/model/user_model.dart';
+import '../../helper/database_service.dart';
+import '../../helper/websocket_service.dart';
 import '../utility/app_shared_prefrence.dart';
 import 'Dashboard/dashboard_screen.dart';
 
@@ -31,9 +38,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   void initState() {
-    super.initState();
-    _controller.forward();
-
+    super.initState(); _controller.forward();
     accessToken= '';
     _controller.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
@@ -47,7 +52,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           accessToken = userData['accessToken'].toString();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => DashboardScreen()),
+            MaterialPageRoute(builder: (context) => DashboardScreen(),
+            ),
           );
         } else {
           print('No user found, navigating to login.');

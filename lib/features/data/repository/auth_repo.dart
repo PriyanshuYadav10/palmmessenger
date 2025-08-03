@@ -10,8 +10,10 @@ import '../../../core/resources/exception/api_response.dart';
 import '../data-source/remote/dio_client.dart';
 import '../model/PlamIdModel.dart';
 import '../model/RequestOtpModel.dart';
+import '../model/contacts_user_model.dart';
 import '../model/createOderModel.dart';
 import '../model/profileUpdateModel.dart';
+import '../model/public_key_add_model.dart';
 import '../model/userProfileDataModel.dart';
 import '../model/verifyOtpModel.dart';
 
@@ -46,6 +48,26 @@ Future<verifyOtpModel?> verifyRepo(Map<String, dynamic> param) async {
       debugPrint('response.statusCode-->  ${response.statusCode}');
       debugPrint('response.data-->  ${response.data}');
       return verifyOtpModel.fromJson(response.data);
+    } else {
+      return null;
+    }
+  } catch (e) {
+    print(ApiErrorHandler.getMessage(e));
+    return null;
+  }
+}
+
+Future<publicKeyAddModel?> publicKeyRepo(Map<String, dynamic> param) async {
+  dioClient.updateHeader(accessToken);
+  try {
+    Response response = await dioClient.put(AppConstants.publicKey, data: param);
+
+    debugPrint('response.statusCode-->  ${response.statusCode}');
+    debugPrint('response.data-->  ${response.data}');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint('response.statusCode-->  ${response.statusCode}');
+      debugPrint('response.data-->  ${response.data}');
+      return publicKeyAddModel.fromJson(response.data);
     } else {
       return null;
     }

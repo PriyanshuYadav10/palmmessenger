@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 import '../../../../config/theme/app_themes.dart';
 import '../../../../config/theme/textstyles.dart';
 import '../../../../core/constants/images.dart';
+import '../../../data/encryption/rsa_helper.dart';
+import '../../../data/encryption/rsa_key_helper.dart';
 import '../../../helper/alertDiaolg.dart';
 import '../../../provider/authProvider.dart';
 import '../../utility/global.dart';
@@ -35,11 +37,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   Timer? _timer;
   int _remainingTime = 60;
   bool _showResend = false;
-
   @override
   void initState() {
     super.initState();
     startTimer();
+
     otpCtrl.text = Provider.of<AuthProvider>(context, listen: false)
         .otpModel!
         .otp
@@ -95,7 +97,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     };
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.verifyOtp(param);
-
     debugPrint("OTP: ${authProvider.message}");
     debugPrint("OTP: ${authProvider.otpVerifyModel?.isVerified}");
     debugPrint("Expiry: ${authProvider.otpVerifyModel?.accessToken}");
@@ -111,7 +112,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           Get.offAll(SetUpProfileScreen());
         }
       } else {
-        Get.offAll(DashboardScreen());
+        Get.offAll(DashboardScreen(),);
       }
 
       showAlertSuccess(authProvider.message, context);

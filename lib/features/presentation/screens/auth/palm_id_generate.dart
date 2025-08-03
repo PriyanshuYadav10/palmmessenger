@@ -9,6 +9,7 @@ import '../../../../config/theme/spaces.dart';
 import '../../../../config/theme/textstyles.dart';
 import '../../../../core/constants/images.dart';
 import '../../../provider/authProvider.dart';
+import '../../utility/global.dart';
 import '../../utility/gradient_text.dart';
 import '../../widgets/button.dart';
 import '../Dashboard/dashboard_screen.dart';
@@ -125,7 +126,7 @@ class _PalmIdGenerateScreenState extends State<PalmIdGenerateScreen> {
                 ),
                 hSpace(100),
                 customButton(() {
-                  Get.offAll(DashboardScreen());
+                  Get.offAll(DashboardScreen(),);
                 }, 'Start Messaging', context,isLoading: authProvider.isLoading),
                 hSpace(30),
                 Padding(

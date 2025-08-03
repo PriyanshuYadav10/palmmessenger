@@ -5,6 +5,7 @@ import 'package:palmmessenger/features/data/model/profileUpdateModel.dart';
 import '../data/model/PlamIdModel.dart';
 import '../data/model/RequestOtpModel.dart';
 import '../data/model/createOderModel.dart';
+import '../data/model/public_key_add_model.dart';
 import '../data/model/userProfileDataModel.dart';
 import '../data/model/verifyOtpModel.dart';
 import '../data/repository/auth_repo.dart';
@@ -17,6 +18,7 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   String _message = '';
   RequestOtpModel? _otpModel;
+  publicKeyAddModel? publicKeyModel;
   verifyOtpModel? _otpVerifyModel;
   CreateOrderModel? _createOrderModel;
   PalmIdModel? _palmIdModel;
@@ -26,6 +28,7 @@ class AuthProvider with ChangeNotifier {
   bool get  isLoading => _isLoading;
   String get message => _message;
   RequestOtpModel? get otpModel => _otpModel;
+  publicKeyAddModel? get publicKeyData => publicKeyModel;
   verifyOtpModel? get otpVerifyModel => _otpVerifyModel;
   CreateOrderModel? get createOrderModel => _createOrderModel;
   PalmIdModel? get palmIdModel => _palmIdModel;
@@ -47,6 +50,28 @@ class AuthProvider with ChangeNotifier {
         _message = "OTP sent successfully!";
       } else {
         _message = "Failed to send OTP.";
+      }
+    } catch (e) {
+      _message = "Error: ${e.toString()}";
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> publicKey(Map<String, dynamic> param) async {
+    _isLoading = true;
+    print('_isLoading   $_isLoading');
+    _message = '';
+    notifyListeners();
+    _otpModel?.otp ='';
+    try {
+      final model = await authRepo.publicKeyRepo(param);
+
+      _isLoading = false;
+      if (model != null) {
+        publicKeyModel = model;
+      } else {
+        _message = "Failed to generate public key.";
       }
     } catch (e) {
       _message = "Error: ${e.toString()}";

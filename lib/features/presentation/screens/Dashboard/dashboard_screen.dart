@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:palmmessenger/config/theme/textstyles.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/chat_screen.dart';
+import 'package:palmmessenger/features/presentation/screens/Dashboard/chats/chat_screen.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/settings_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/images.dart';
+import '../../../data/encryption/rsa_helper.dart';
+import '../../../data/encryption/rsa_key_helper.dart';
+import '../../../data/model/user_model.dart';
 import '../../../helper/alertDiaolg.dart';
+import '../../../helper/database_service.dart';
+import '../../../helper/websocket_service.dart';
 import '../../../provider/authProvider.dart';
+import '../../utility/app_shared_prefrence.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+
+  const DashboardScreen({super.key,
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -17,20 +26,40 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int selectedIndex = 0;
+  List<Widget>? _screens;
 
-  final List<Widget> _screens = [
-    ChatScreen(),
-    Center(child: Text("Calls")),
-    Center(child: Text("Ghost")),
-    Center(child: Text("Updates")),
-    SettingsScreen(),
-  ];
   @override
-  void initState() {
+   initState()  {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getProfile();
+
+    final rsaHelper = RSAHelper();
+
+    var privatePem;
+    final prefs = AppSharedPref();
+    prefs.read('privateKey').then((data) {
+      privatePem = data;
     });
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final currentUser = UserModel(id: authProvider.userProfileDataModel?.profile?.sId.toString()??'', name: authProvider.userProfileDataModel?.profile?.name.toString()??'', publicKey: authProvider.userProfileDataModel?.profile?.publicKey.toString()??'');
+
+    final db = DBService();
+     db.insertUser(currentUser);
+    final socket = WebSocketService();
+    socket.connect();
+    _screens = [
+      ChatListScreen(
+        localUserId: currentUser.id.toString(),
+        rsaHelper: rsaHelper,
+        privateKeyPem: privatePem,
+        db: db,
+        socket: socket,
+      ),
+      Center(child: Text("Calls")),
+      Center(child: Text("Ghost")),
+      Center(child: Text("Updates")),
+      SettingsScreen(),
+    ];
+    WidgetsBinding.instance.addPostFrameCallback((_) => getProfile());
   }
 
   Future<void> getProfile() async {
@@ -49,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         decoration: BoxDecoration(
           image: DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover),
         ),
-        child: _screens[selectedIndex],
+        child: _screens?[selectedIndex],
       ),
       bottomNavigationBar: Container(
         margin: EdgeInsets.all(16),

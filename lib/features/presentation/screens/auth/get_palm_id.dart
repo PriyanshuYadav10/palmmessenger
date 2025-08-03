@@ -8,6 +8,7 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../../config/theme/textstyles.dart';
 import '../../../../core/constants/images.dart';
+import '../../../data/encryption/rsa_key_helper.dart';
 import '../../../helper/alertDiaolg.dart';
 import '../../../provider/authProvider.dart';
 import '../../utility/app_shared_prefrence.dart';
@@ -56,6 +57,31 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
     }
   }
 
+  var privatePem = '';
+  var publicPem = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    final keyPair = RSAKeyHelper.generateKeyPair();
+    privatePem = RSAKeyHelper.encodePrivateKeyToPemPKCS1(keyPair.privateKey);
+    publicPem = RSAKeyHelper.encodePublicKeyToPemPKCS1(keyPair.publicKey);
+    final prefs = AppSharedPref();
+    prefs.save("privateKey", privatePem);
+    super.initState();
+  }
+  Future<void> publicKeyApi() async {
+    Map<String, dynamic> param = {"publicKey": publicPem};
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.publicKey(param);
+
+    if (authProvider.publicKeyModel?.message != '') {
+
+    } else {
+      showAlertError(authProvider.message, context);
+    }
+  }
+
   Future<void> registerPalId(orderId,paymentId,signature) async {
     Map<String, dynamic> param={
       "name":nameCtrl.text,
@@ -74,6 +100,7 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
         prefs.read('userData').then((data) {
           print('data--> ${data}');
         });
+        publicKeyApi();
         accessToken=authProvider.palmIdModel!.accessToken.toString();
         Get.offAll(PalmIdGenerateScreen(name: nameCtrl.text));
         showAlertSuccess(authProvider.message, context);

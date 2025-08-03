@@ -10,8 +10,11 @@ import 'package:provider/provider.dart';
 
 import '../../../../config/theme/textstyles.dart';
 import '../../../../core/constants/images.dart';
+import '../../../data/encryption/rsa_key_helper.dart';
 import '../../../helper/alertDiaolg.dart';
 import '../../../provider/authProvider.dart';
+import '../../utility/app_shared_prefrence.dart';
+import '../../utility/global.dart';
 import '../../utility/gradient_text.dart';
 import '../../widgets/button.dart';
 import '../../widgets/textfeild.dart';
@@ -40,12 +43,39 @@ class _SetUpProfileScreenState extends State<SetUpProfileScreen> {
       if(authProvider.isLoading==false) {
         showAlertSuccess(
             authProvider.profileUpdateModel!.message.toString(), context);
-        Get.offAll(DashboardScreen());
+        Get.offAll(DashboardScreen(),);
+        publicKeyApi();
       }
     }else{
       showAlertError(authProvider.message, context);
     }
   }
+
+  var privatePem = '';
+  var publicPem = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    final keyPair = RSAKeyHelper.generateKeyPair();
+    privatePem = RSAKeyHelper.encodePrivateKeyToPemPKCS1(keyPair.privateKey);
+    publicPem = RSAKeyHelper.encodePublicKeyToPemPKCS1(keyPair.publicKey);
+    final prefs = AppSharedPref();
+    prefs.save("privateKey", privatePem);
+    super.initState();
+  }
+  Future<void> publicKeyApi() async {
+    Map<String, dynamic> param = {"publicKey": publicPem};
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.publicKey(param);
+
+    if (authProvider.publicKeyModel?.message != '') {
+
+    } else {
+      showAlertError(authProvider.message, context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return  Consumer<AuthProvider>(
