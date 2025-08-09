@@ -1,62 +1,95 @@
-// import 'dart:convert';
-//
-// import 'package:uuid/uuid.dart';
-// import 'package:web_socket_channel/web_socket_channel.dart';
-//
-// import '../presentation/utility/global.dart';
-//
-// class WebSocketService {
-//   late WebSocketChannel _channel;
-//   Function(Map<String, dynamic>)? onMessageReceived;
-//
-//   void connect(String userId) {
-//     _channel = WebSocketChannel.connect(
-//       Uri.parse('wss://palm-messenger.onrender.com?token=$accessToken'),
-//     );
-//     _channel.stream.listen((raw) {
-//       try {
-//         final Map<String, dynamic> message = jsonDecode(raw);
-//         onMessageReceived?.call(message);
-//       } catch (e) {
-//         print("WebSocket error: $e");
-//       }
-//     });
-//   }
-//
-//   void sendMessage({required String to, required String message}) {
-//     final msg = {
-//       'messageId': const Uuid().v4(),
-//       'to': to,
-//       'message': message,
-//       'timestamp': DateTime.now().millisecondsSinceEpoch,
-//     };
-//     _channel.sink.add(jsonEncode(msg));
-//   }
-//
-//   void disconnect() {
-//     _channel.sink.close();
-//   }
-// }
-import 'dart:convert';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:uuid/uuid.dart';
 
 import '../presentation/utility/global.dart';
 
 class WebSocketService {
-  late WebSocketChannel _channel;
-  Function(Map<String, dynamic>)? onMessageReceived;
+  late IO.Socket _socket;
 
+  /// Callbacks for incoming events
+  Function(Map<String, dynamic>)? onMessageReceived;
+  Function(Map<String, dynamic>)? onMessageUpdate;
+
+  /// Connect to the Socket.IO server
   void connect() {
-    _channel = WebSocketChannel.connect( Uri.parse('wss://palm-messenger.onrender.com/ws?token=$accessToken'));
-    _channel.stream.listen((event) {
-      final data = jsonDecode(event);
-      onMessageReceived?.call(data);
+    _socket = IO.io(
+      'https://palm-messenger.onrender.com',
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .setQuery({'token': accessToken}) // send token as query param
+          .build(),
+    );
+
+    _socket.connect();
+
+    _socket.onConnect((_) {
+      print('✅ Connected to socket server');
+    });
+
+    _socket.onConnectError((err) {
+      print('❌ Connection error: $err');
+    });
+
+    _socket.onDisconnect((_) {
+      print('🔌 Disconnected from socket server');
+    });
+
+    // 📥 Receive new message
+    _socket.on('receive-message', (data) {
+      print('📩 Received message: $data');
+      if (data is Map) {
+        onMessageReceived?.call(Map<String, dynamic>.from(data));
+      }
+    });
+
+    // 📥 Receive message status update
+    _socket.on('receive-message-update', (data) {
+      print('📬 Received message update: $data');
+      if (data is Map) {
+        onMessageUpdate?.call(Map<String, dynamic>.from(data));
+      }
     });
   }
 
-  void sendMessage(Map<String, dynamic> msg) {
-    _channel.sink.add(jsonEncode(msg));
+  /// 📤 Send a new message
+  void sendMessage({
+    required String to,
+    required String message,
+    String? attachment,
+  }) {
+    final payload = {
+      'messageId': const Uuid().v4(),
+      'to': to,
+      'message': message,
+      if (attachment != null) 'attachment': attachment,
+    };
+
+    print('📤 Sending message: $payload');
+    _socket.emitWithAck('send-message', payload,ack:  (response) {
+      print('✅ Ack received from server: $response');
+    });
   }
 
-  void disconnect() => _channel.sink.close();
+  /// 📤 Send a message update (delivered/seen/deleted)
+  void sendMessageUpdate({
+    required String messageId,
+    required String to,
+    required String status,
+  }) {
+    final payload = {
+      'messageId': messageId,
+      'to': to,
+      'status': status,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+
+    print('📤 Sending message update: $payload');
+    _socket.emit('send-message-update', payload);
+  }
+
+  /// Disconnect from socket
+  void disconnect() {
+    _socket.disconnect();
+  }
 }

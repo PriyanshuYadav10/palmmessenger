@@ -1,5 +1,5 @@
 class MessageModel {
-  final int? id;
+  final String? id;
   final String senderId;
   final String receiverId;
   final String content; // decrypted content

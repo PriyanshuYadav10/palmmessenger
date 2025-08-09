@@ -21,7 +21,7 @@ class DBService {
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             senderId TEXT,
             receiverId TEXT,
             content TEXT,
