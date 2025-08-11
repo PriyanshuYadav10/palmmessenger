@@ -42,7 +42,7 @@ Whether you're building a secure messaging system or learning advanced Flutter p
 # 📦 Installation
 
 ```bash
-git clone https://github.com/yourusername/palmMessenger.git
+git clone https://github.com/PriyanshuYadav10/palmmessenger.git
 cd palmMessenger
 flutter pub get
 flutter run
