@@ -29,38 +29,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<Widget>? _screens;
 
   @override
-   initState()  {
+  void initState() {
     super.initState();
+    initDashboard();
+  }
 
+  Future<void> initDashboard() async {
     final rsaHelper = RSAHelper();
 
-    var privatePem;
     final prefs = AppSharedPref();
-    prefs.read('privateKey').then((data) {
-      privatePem = data;
-    });
+    var privatePem = await prefs.read('privateKey');
+    print('private--> $privatePem');
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final currentUser = UserModel(id: authProvider.userProfileDataModel?.profile?.sId.toString()??'', name: authProvider.userProfileDataModel?.profile?.name.toString()??'', publicKey: authProvider.userProfileDataModel?.profile?.publicKey.toString()??'');
+    final currentUser = UserModel(
+      id: authProvider.userProfileDataModel?.profile?.sId.toString() ?? '',
+      name: authProvider.userProfileDataModel?.profile?.name.toString() ?? '',
+      publicKey: authProvider.userProfileDataModel?.profile?.publicKey.toString() ?? '',
+    );
 
     final db = DBService();
-     db.insertUser(currentUser);
+    await db.insertUser(currentUser);
+
     final socket = WebSocketService();
     socket.connect();
-    _screens = [
-      ChatListScreen(
-        localUserId: currentUser.id.toString(),
-        rsaHelper: rsaHelper,
-        privateKeyPem: privatePem,
-        db: db,
-        socket: socket,
-      ),
-      Center(child: Text("Calls")),
-      Center(child: Text("Ghost")),
-      Center(child: Text("Updates")),
-      SettingsScreen(),
-    ];
+
+    setState(() {
+      _screens = [
+        ChatListScreen(
+          localUserId: currentUser.id,
+          rsaHelper: rsaHelper,
+          privateKeyPem: privatePem,
+          db: db,
+          socket: socket,
+        ),
+        const Center(child: Text("Calls")),
+        const Center(child: Text("Ghost")),
+        const Center(child: Text("Updates")),
+        SettingsScreen(),
+      ];
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => getProfile());
   }
+
 
   Future<void> getProfile() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);

@@ -334,7 +334,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       child: _chatTile(
                         peer.name, // 👈 display actual name
                         msg.content,
-                        '${msg.timestamp.hour}:${msg.timestamp.minute.toString().padLeft(2, '0')}',
+                        // '${msg.timestamp.hour}:${msg.timestamp.minute.toString().padLeft(2, '0')}',
+                        '',
                         vector, // You can replace this with peer.avatarPath if available
                         unread: 3,
                       ),

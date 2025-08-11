@@ -62,6 +62,7 @@ class _SetUpProfileScreenState extends State<SetUpProfileScreen> {
     publicPem = RSAKeyHelper.encodePublicKeyToPemPKCS1(keyPair.publicKey);
     final prefs = AppSharedPref();
     prefs.save("privateKey", privatePem);
+    print(privatePem);
     super.initState();
   }
   Future<void> publicKeyApi() async {

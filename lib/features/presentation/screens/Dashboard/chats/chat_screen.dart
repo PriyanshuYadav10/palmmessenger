@@ -38,9 +38,15 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+
     loadChat();
 
     widget.socket?.onMessageReceived = (msg) async {
+      print('msg__> ${msg.entries}');
+      print('msg__> ${msg.keys}');
+      print('msg__> ${msg.values}');
+      print('msg__> ${msg.length}');
+      print('msg__> ${widget.privateKeyPem.toString()}');
       final decrypted = widget.rsaHelper?.decryptWithPrivateKey(
         msg['message'],
         widget.privateKeyPem.toString(),
@@ -52,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
         receiverId: msg['to'],
         content: decrypted.toString(),
         encrypted: msg['message'],
-        timestamp: DateTime.fromMillisecondsSinceEpoch(msg['timestamp']),
+        // timestamp: DateTime.fromMillisecondsSinceEpoch(msg['timestamp']),
       );
 
       await widget.db?.insertMessage(model);
@@ -90,7 +96,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     final messageId = const Uuid().v4();
-    final timestamp = DateTime.now();
+    // final timestamp = DateTime.now();
 
     final model = MessageModel(
       id: messageId.toString(),
@@ -98,7 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.peer!.id,
       content: text,
       encrypted: encrypted.toString(),
-      timestamp: timestamp,
+      // timestamp: timestamp,
     );
 
     widget.socket?.sendMessage(
@@ -147,7 +153,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           Text(msg.content),
                           SizedBox(height: 4),
                           Text(
-                            DateFormat('hh:mm a').format(msg.timestamp),
+                            // DateFormat('hh:mm a').format(msg.timestamp),
+                            '',
                             style: TextStyle(fontSize: 10, color: Colors.grey),
                           ),
                         ],

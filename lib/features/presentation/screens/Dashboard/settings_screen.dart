@@ -10,6 +10,7 @@ import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/my_account.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/notifications_and_sound.dart';
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/privacy_and_security.dart';
+import 'package:palmmessenger/features/presentation/utility/global.dart';
 import 'package:palmmessenger/features/presentation/utility/gradient_text.dart';
 import 'package:provider/provider.dart';
 
@@ -108,11 +109,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           style: Styles.semiBoldTextStyle(size: 30),
                         ),
                         hSpace(4),
-                        Text(
-                          authProvider.userProfileDataModel?.profile?.bio ?? '',
-                          style: Styles.mediumTextStyle(
-                            color: ColorResources.whiteColor,
-                            size: 18,
+                        InkWell(
+                          onTap: (){
+                            showLogoutDialog(context, 'Logout', (){
+
+                            });
+                          },
+                          child: Text(
+                            authProvider.userProfileDataModel?.profile?.bio ?? '',
+                            style: Styles.mediumTextStyle(
+                              color: ColorResources.whiteColor,
+                              size: 18,
+                            ),
                           ),
                         ),
                       ],
