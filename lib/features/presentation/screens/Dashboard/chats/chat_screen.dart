@@ -38,7 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-
+    print(widget.privateKeyPem);
     loadChat();
 
     widget.socket?.onMessageReceived = (msg) async {

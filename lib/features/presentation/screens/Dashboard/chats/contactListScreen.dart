@@ -87,9 +87,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                 NetworkImage(contact.profilePicture!),
               )
                   : CircleAvatar(
-                child: Text(contact.name!.isNotEmpty
-                    ? contact.name![0]
-                    : '?'),
+                child: Text(contact.name?[0]??''),
               ),
               title: Text(peerName.toString(),
                   style: Styles.semiBoldTextStyle(

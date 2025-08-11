@@ -15,6 +15,8 @@ import 'package:palmmessenger/features/presentation/utility/gradient_text.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/authProvider.dart';
+import '../../utility/app_shared_prefrence.dart';
+import '../auth/LoginScreen.dart';
 import 'setttiings/broadcast_message.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -109,24 +111,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           style: Styles.semiBoldTextStyle(size: 30),
                         ),
                         hSpace(4),
-                        InkWell(
-                          onTap: (){
-                            showLogoutDialog(context, 'Logout', (){
-
-                            });
-                          },
-                          child: Text(
-                            authProvider.userProfileDataModel?.profile?.bio ?? '',
-                            style: Styles.mediumTextStyle(
-                              color: ColorResources.whiteColor,
-                              size: 18,
-                            ),
+                        Text(
+                          authProvider.userProfileDataModel?.profile?.bio ?? '',
+                          style: Styles.mediumTextStyle(
+                            color: ColorResources.whiteColor,
+                            size: 18,
                           ),
                         ),
                       ],
                     ),
                     Spacer(),
-                    SizedBox(width: 35, child: Image.asset(qr_code)),
+                    InkWell(
+                        onTap: (){
+                          showLogoutDialog(context,'logout user',(success){
+                            final prefs = AppSharedPref();
+                            prefs.remove("userData");
+                            Get.offAll(LoginScreen());
+                          });
+                        },
+                        child: SizedBox(width: 35, child: Image.asset(qr_code))),
                   ],
                 ),
                 hSpace(15),
