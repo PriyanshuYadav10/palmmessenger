@@ -18,14 +18,14 @@ class ContactListScreen extends StatefulWidget {
   String? localUserId;
   RSAHelper? rsaHelper;
   String? privateKeyPem;
-  DBService? db;
+  SecureStorageService? storage;
   WebSocketService? socket;
 
   ContactListScreen({
     required this.localUserId,
     required this.rsaHelper,
     required this.privateKeyPem,
-    required this.db,
+    required this.storage,
     required this.socket,
   });
 
@@ -44,6 +44,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Provider.of<HomeProvider>(context, listen: false).fetchContactsAndSend();
       });
+
     }
   }
 
@@ -98,16 +99,16 @@ class _ContactListScreenState extends State<ContactListScreen> {
                       color: ColorResources.whiteColor, size: 13)),
               onTap: () {
                 if (peerUserId != 'unknown') {
-                  widget.db?.insertUser( UserModel(id: contact.sId.toString(), name: contact.name.toString() , publicKey: contact.publicKey.toString(),avatarPath: contact.profilePicture.toString()));
+                  widget.storage?.saveUser( UserModel(id: contact.sId.toString(), name: contact.name.toString() , publicKey: contact.publicKey.toString(),avatarPath: contact.profilePicture.toString()));
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => ChatScreen(
                         peer: UserModel(id: contact.sId.toString(), name: contact.name.toString() , publicKey: contact.publicKey.toString()),
                         localUserId: widget.localUserId.toString(),
+                        privateKeyPem: widget.privateKeyPem.toString(),
                         rsaHelper: widget.rsaHelper,
-                        privateKeyPem: widget.privateKeyPem,
-                        db: widget.db,
+                      storage: widget.storage,
                         socket: widget.socket,
                       ),
                     ),

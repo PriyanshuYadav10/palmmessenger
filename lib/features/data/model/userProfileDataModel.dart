@@ -24,6 +24,7 @@ class Profile {
   String? sId;
   String? phoneNo;
   bool? isVerified;
+  String? accessToken;
   bool? isBlocked;
   bool? lastSeen;
   bool? readReceipts;
@@ -41,6 +42,7 @@ class Profile {
         this.isVerified,
         this.isBlocked,
         this.lastSeen,
+        this.accessToken,
         this.readReceipts,
         this.createdAt,
         this.updatedAt,
@@ -55,6 +57,7 @@ class Profile {
     sId = json['_id'];
     phoneNo = json['phoneNo'];
     isVerified = json['isVerified'];
+    accessToken = json['accessToken'];
     isBlocked = json['isBlocked'];
     lastSeen = json['lastSeen'];
     readReceipts = json['readReceipts'];
@@ -71,6 +74,7 @@ class Profile {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['phoneNo'] = this.phoneNo;
+    data['accessToken'] = this.accessToken;
     data['isVerified'] = this.isVerified;
     data['isBlocked'] = this.isBlocked;
     data['lastSeen'] = this.lastSeen;

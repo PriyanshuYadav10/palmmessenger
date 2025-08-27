@@ -12,6 +12,7 @@ import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings
 import 'package:palmmessenger/features/presentation/screens/Dashboard/setttiings/privacy_and_security.dart';
 import 'package:palmmessenger/features/presentation/utility/global.dart';
 import 'package:palmmessenger/features/presentation/utility/gradient_text.dart';
+import 'package:palmmessenger/features/provider/settingProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/authProvider.dart';
@@ -43,11 +44,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: 'Account',
       subtitle: 'Manage your info',
     ),
-    InfoTile(
-      imagePath: lists,
-      title: 'Lists',
-      subtitle: 'Manage people and groups',
-    ),
+    // InfoTile(
+    //   imagePath: lists,
+    //   title: 'Lists',
+    //   subtitle: 'Manage people and groups',
+    // ),
     InfoTile(
       imagePath: privacy_security,
       title: 'Privacy and security',
@@ -59,17 +60,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: 'Notifications and sounds',
       subtitle: 'Manage alerts and tones',
     ),
-    InfoTile(
-      imagePath: linked_device,
-      title: 'Linked Devices',
-      subtitle: 'Link other devices',
-    ),
+    // InfoTile(
+    //   imagePath: linked_device,
+    //   title: 'Linked Devices',
+    //   subtitle: 'Link other devices',
+    // ),
     InfoTile(
       imagePath: palm_id,
       title: 'Palm ID',
       subtitle: 'Buy and upgrade Palm ID plans',
     ),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    final settingsProvider = Provider.of<Settingsprovider>(context, listen: false);
+    settingsProvider.getUserSettings();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,15 +156,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         } else if (index == 2) {
                           Get.to(MyAccountScreen());
                         } else if (index == 3) {
-                          Get.to(ListScreen());
-                        } else if (index == 4) {
                           Get.to(PrivacyAndSecurityScreen());
-                        } else if (index == 5) {
+                        } else if (index == 4) {
                           Get.to(ChatSettingsScreen());
-                        } else if (index == 6) {
+                        } else if (index == 5) {
                           Get.to(NotificationAndSoundScreen());
-                        } else if (index == 7) {
-                          Get.to(LinkedDevicesScreen());
+                        } else if (index == 6) {
+                          // Get.to(LinkedDevicesScreen());
                         }
                       },
                       child: ListTile(

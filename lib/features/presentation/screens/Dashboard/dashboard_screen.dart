@@ -31,10 +31,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    initDashboard();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => getProfile());
   }
 
   Future<void> initDashboard() async {
+
     final rsaHelper = RSAHelper();
 
     final prefs = AppSharedPref();
@@ -48,19 +50,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       publicKey: authProvider.userProfileDataModel?.profile?.publicKey.toString() ?? '',
     );
 
-    final db = DBService();
-    await db.insertUser(currentUser);
+    final db = SecureStorageService();
+    await db.saveUser(currentUser);
 
     final socket = WebSocketService();
     socket.connect();
 
+    print('localId-->${currentUser.id.toString()}');
+    print('localId-->${authProvider.userProfileDataModel?.profile?.sId.toString()}');
     setState(() {
       _screens = [
+
         ChatListScreen(
           localUserId: currentUser.id,
           rsaHelper: rsaHelper,
           privateKeyPem: privatePem,
-          db: db,
+          storage: db,
           socket: socket,
         ),
         const Center(child: Text("Calls")),
@@ -70,7 +75,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ];
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => getProfile());
   }
 
 
@@ -78,6 +82,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.getProfile();
     if (authProvider.userProfileDataModel?.success == true) {
+      final prefs = AppSharedPref();
+      var  accessToken = '';
+      final userData = await prefs.read("userData");
+      accessToken = userData['accessToken'].toString();
+      authProvider.userProfileDataModel?.profile?.accessToken = accessToken;
+      prefs.save("userData", authProvider.userProfileDataModel?.profile);
+      prefs.read('userData').then((data) {
+        print('data--> ${data}');
+      });
+      initDashboard();
     } else {
       showAlertError(authProvider.message, context);
     }

@@ -1,6 +1,10 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:palmmessenger/features/data/repository/chat_repo.dart';
+import 'package:palmmessenger/features/data/repository/setting_repo.dart';
+import 'package:palmmessenger/features/provider/chatProvider.dart';
+import 'package:palmmessenger/features/provider/settingProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/constants/app_constants.dart';
@@ -24,9 +28,13 @@ Future<void> init() async {
 
   //User Repository
   sl.registerLazySingleton(() => HomeRepo(dioClient: sl()));
+  sl.registerLazySingleton(() => ChatRepo(dioClient: sl()));
+  sl.registerLazySingleton(() => SettingsRepo(dioClient: sl()));
 
   //User Provider
   sl.registerFactory(() => HomeProvider(homeRepo: sl()));
+  sl.registerFactory(() => ChatProvider(chatRepo: sl()));
+  sl.registerFactory(() => Settingsprovider(settingsRepo: sl()));
   // // External
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);

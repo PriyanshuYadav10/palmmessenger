@@ -67,7 +67,7 @@ Widget buildTextField(
         obscureText: isObsecure,
         maxLines: maxLine,
         onChanged: (text) {
-          if (fun != null) fun.call();
+          if (fun != null) fun.call(text);
           print('text-->$text');
         },
         keyboardType: keyboardType,

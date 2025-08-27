@@ -1,4 +1,4 @@
-package com.example.palmmessenger
+package com.app.palmmessenger
 
 import io.flutter.embedding.android.FlutterActivity
 

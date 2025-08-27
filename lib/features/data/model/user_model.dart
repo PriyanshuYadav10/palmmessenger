@@ -10,18 +10,17 @@ class UserModel {
     required this.publicKey,
     this.avatarPath,
   });
-
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
     'publicKey': publicKey,
-    'avatarPath': avatarPath,
+    'profileImage': avatarPath,
   };
 
-  factory UserModel.fromMap(Map<String, dynamic> map) => UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> map) => UserModel(
     id: map['id'],
     name: map['name'],
     publicKey: map['publicKey'],
-    avatarPath: map['avatarPath'],
+    avatarPath: map['profileImage'],
   );
 }

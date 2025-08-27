@@ -1,98 +1,95 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-
-import '../data/model/message_model.dart';
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../data/model/user_model.dart';
+import '../data/model/message_model.dart';
 
-class DBService {
-  static Database? _db;
+class SecureStorageService {
+  final _storage = const FlutterSecureStorage();
 
-  Future<Database> get db async {
-    if (_db != null) return _db!;
-    _db = await _init();
-    return _db!;
+  // Save user
+  Future<void> saveUser(UserModel user) async {
+    await _storage.write(key: 'user_${user.id}', value: jsonEncode(user.toJson()));
   }
 
-  Future<Database> _init() async {
-    final path = join(await getDatabasesPath(), 'chat_secure.db');
-    return await openDatabase(
-      path,
-      version: 2,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE messages (
-            id TEXT PRIMARY KEY,
-            senderId TEXT,
-            receiverId TEXT,
-            content TEXT,
-            encrypted TEXT,
-            timestamp TEXT
-          )
-        ''');
-
-        await db.execute('''
-          CREATE TABLE users (
-            id TEXT PRIMARY KEY,
-            name TEXT,
-            publicKey TEXT,
-            avatarPath TEXT
-          )
-        ''');
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion == 1 && newVersion == 2) {
-          await db.execute('ALTER TABLE users ADD COLUMN avatarPath TEXT');
-        }
-      },
-    );
-  }
-
-  Future<void> insertMessage(MessageModel msg) async {
-    final database = await db;
-    await database.insert('messages', msg.toMap());
-  }
-
-  Future<List<MessageModel>> getMessages(String userId1, String userId2) async {
-    final database = await db;
-    final result = await database.query(
-      'messages',
-      where: '(senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?)',
-      whereArgs: [userId1, userId2, userId2, userId1],
-      orderBy: 'timestamp ASC',
-    );
-    return result.map((m) => MessageModel.fromMap(m)).toList();
-  }
-
-  Future<void> insertUser(UserModel user) async {
-    final database = await db;
-    await database.insert('users', user.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
-  }
-
+  // Get user
   Future<UserModel?> getUser(String id) async {
-    final database = await db;
-    final result = await database.query('users', where: 'id = ?', whereArgs: [id]);
-    if (result.isNotEmpty) {
-      return UserModel.fromMap(result.first);
-    }
-    return null;
+    final data = await _storage.read(key: 'user_$id');
+    if (data == null) return null;
+    return UserModel.fromJson(jsonDecode(data));
   }
 
-  Future<List<MessageModel>> getLatestMessagesGroupedByPeer(String localUserId) async {
-    final database = await db;
-    final result = await database.rawQuery('''
-      SELECT * FROM messages
-      WHERE id IN (
-        SELECT MAX(id) FROM messages
-        WHERE senderId = ? OR receiverId = ?
-        GROUP BY 
-          CASE 
-            WHEN senderId = ? THEN receiverId 
-            ELSE senderId 
-          END
-      )
-      ORDER BY timestamp DESC
-    ''', [localUserId, localUserId, localUserId]);
+  // Save message
+  Future<void> saveMessage(MessageModel msg) async {
+    final chatKey = 'chat_${_chatId(msg.senderId, msg.receiverId)}';
+    final existing = await _storage.read(key: chatKey);
+    List messages = existing != null ? jsonDecode(existing) : [];
+    messages.add(msg.toJson());
+    await _storage.write(key: chatKey, value: jsonEncode(messages));
+  }
 
-    return result.map((m) => MessageModel.fromMap(m)).toList();
+  // Get messages for a chat
+  Future<List<MessageModel>> getMessages(String user1, String user2) async {
+    final chatKey = 'chat_${_chatId(user1, user2)}';
+    final data = await _storage.read(key: chatKey);
+    if (data == null) return [];
+    final List decoded = jsonDecode(data);
+    return decoded.map((e) => MessageModel.fromJson(e)).toList();
+  }
+
+  // Get latest messages for chat list
+  Future<List<MessageModel>> getLatestMessages(String myId) async {
+    final allKeys = await _storage.readAll();
+    final chats = allKeys.keys.where((k) => k.startsWith('chat_'));
+    List<MessageModel> latest = [];
+
+    for (var chatKey in chats) {
+      final data = allKeys[chatKey];
+      if (data != null) {
+        final List decoded = jsonDecode(data);
+        if (decoded.isNotEmpty) {
+          final last = MessageModel.fromJson(decoded.last);
+          if (last.senderId == myId || last.receiverId == myId) {
+            latest.add(last);
+          }
+        }
+      }
+    }
+    return latest;
+  }
+  Future<int> getUnreadMessageCount(String localUserId, String peerId) async {
+    final messages = await getMessages(peerId, localUserId);
+    return messages.where((msg) => msg.receiverId == localUserId && !msg.isRead).length;
+  }
+
+  Future<void> markMessageAsRead(String messageId) async {
+    final allKeys = await _storage.readAll();
+    final chatKeys = allKeys.keys.where((k) => k.startsWith('chat_'));
+
+    for (final key in chatKeys) {
+      final data = await _storage.read(key: key);
+      if (data != null) {
+        final List decoded = jsonDecode(data);
+        bool updated = false;
+
+        final updatedMessages = decoded.map((e) {
+          final msg = MessageModel.fromJson(e);
+          if (msg.id == messageId && !msg.isRead) {
+            updated = true;
+            return msg.copyWith(isRead: true);
+          }
+          return msg;
+        }).toList();
+
+        if (updated) {
+          await _storage.write(key: key, value: jsonEncode(updatedMessages));
+          break; // message ID is unique, no need to check other chats
+        }
+      }
+    }
+  }
+
+  List<String> _chatId(String a, String b) {
+    return [a, b]..sort();
+    // joining sorted IDs ensures same key for both directions
   }
 }

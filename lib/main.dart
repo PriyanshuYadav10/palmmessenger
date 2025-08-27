@@ -1,7 +1,11 @@
+
+
 import 'package:flutter/material.dart' hide Key;
 import 'package:get/get.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:palmmessenger/features/provider/authProvider.dart';
+import 'package:palmmessenger/features/provider/chatProvider.dart';
+import 'package:palmmessenger/features/provider/settingProvider.dart';
 import 'injection-container.dart' as di;
 import 'package:palmmessenger/config/theme/app_themes.dart';
 import 'package:palmmessenger/features/presentation/screens/SplashScreen.dart';
@@ -21,7 +25,9 @@ Future<void> main() async {
   runApp(OKToast(
     child: MultiProvider(providers: [
       ChangeNotifierProvider(create: (context)=>di.sl<AuthProvider>()),
-      ChangeNotifierProvider(create: (context)=>di.sl<HomeProvider>())
+      ChangeNotifierProvider(create: (context)=>di.sl<HomeProvider>()),
+      ChangeNotifierProvider(create: (context)=>di.sl<ChatProvider>()),
+      ChangeNotifierProvider(create: (context)=>di.sl<Settingsprovider>())
     ],
     child: MyApp(),
     ),
