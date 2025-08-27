@@ -138,7 +138,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         }
       }
       // Now reload chats
-      _loadChats();`
+      _loadChats();
     };
 
   }
