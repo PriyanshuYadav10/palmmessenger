@@ -37,6 +37,21 @@ class _PrivacyAndSecurityScreenState extends State<PrivacyAndSecurityScreen> {
     "Everyone",
   ];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final settingsProvider = Provider.of<Settingsprovider>(
+        context, listen: false);
+    lastSeen =
+        settingsProvider.settingsModel?.privacy?.lastSeen=='nobody'?"Nobody": settingsProvider.settingsModel?.privacy?.lastSeen=='contacts'?'My contacts':'Everyone';
+    profilePhoto =
+    settingsProvider.settingsModel?.privacy?.profilePhoto=='nobody'?"Nobody": settingsProvider.settingsModel?.privacy?.profilePhoto=='contacts'?'My contacts':'Everyone';
+
+    readReciepts =
+        settingsProvider.settingsModel?.privacy?.readReceipts ?? false;
+    appLock = settingsProvider.settingsModel?.privacy?.appLock ?? false;
+  }
   Widget buildDropdownTile(String title, String value, Function(String?) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),

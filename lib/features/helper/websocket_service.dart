@@ -57,12 +57,14 @@ class WebSocketService {
   void sendMessage({
     required String to,
     required String message,
+    bool? isGroup,
     String? attachment,
   }) {
     final payload = {
       'messageId': const Uuid().v4(),
       'to': to,
       'message': message,
+      if (isGroup != null||isGroup!='')  'isGroup': isGroup,
       if (attachment != null) 'attachment': attachment,
     };
 

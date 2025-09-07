@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String baseURL = "http://13.232.177.243/api/";
+  static const String baseURL = "https://palmmessenger.com/api/";
   static const String loginPalmId = "/auth/login-palm-id";
   static const String requestOtp = "/auth/request-otp";
   static const String verifyOtp = "/auth/verify-otp";
@@ -14,4 +14,6 @@ class AppConstants {
   static const String putPrivacySettings = "settings/privacy";
   static const String putChatSettings = "settings/chat";
   static const String notificationSettings = "settings/notifications";
+  static const String createGroup = "group";
+  static const String userGroups = "group/user-groups";
 }

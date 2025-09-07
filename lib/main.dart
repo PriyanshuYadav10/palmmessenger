@@ -6,6 +6,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:palmmessenger/features/provider/authProvider.dart';
 import 'package:palmmessenger/features/provider/chatProvider.dart';
 import 'package:palmmessenger/features/provider/settingProvider.dart';
+import 'features/presentation/utility/global.dart';
 import 'injection-container.dart' as di;
 import 'package:palmmessenger/config/theme/app_themes.dart';
 import 'package:palmmessenger/features/presentation/screens/SplashScreen.dart';
@@ -38,18 +39,38 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    return MediaQuery(
-      data: mediaQuery.copyWith(textScaleFactor: 0.8),
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Palm Messenger',
-        theme: theme(),
-        home: SplashScreen(),
-      ),
+
+    return Consumer<Settingsprovider>(
+      builder: (context, settingsProvider, child) {
+        ThemeMode themeMode;
+        appTheme= settingsProvider.theme;
+        switch (settingsProvider.theme.toLowerCase()) {
+          case "light":
+            themeMode = ThemeMode.light;
+            break;
+          case "dark":
+            themeMode = ThemeMode.dark;
+            break;
+          default:
+            themeMode = ThemeMode.system;
+        }
+
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaleFactor: 0.8),
+          child: GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Palm Messenger',
+            theme: theme(),       // light
+            darkTheme: darkTheme(), // dark
+            themeMode: themeMode, // ✅ controlled by user
+            home: const SplashScreen(),
+          ),
+        );
+      },
     );
   }
 }
+

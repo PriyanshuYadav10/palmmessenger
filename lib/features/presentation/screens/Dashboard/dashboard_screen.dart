@@ -60,7 +60,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     print('localId-->${authProvider.userProfileDataModel?.profile?.sId.toString()}');
     setState(() {
       _screens = [
-
         ChatListScreen(
           localUserId: currentUser.id,
           rsaHelper: rsaHelper,
@@ -70,7 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         const Center(child: Text("Calls")),
         const Center(child: Text("Ghost")),
-        const Center(child: Text("Updates")),
+        // const Center(child: Text("Updates")),
         SettingsScreen(),
       ];
     });
@@ -120,8 +119,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _navItem(chat, "Chats", 0),
             _navItem(calls, "Calls", 1),
             _navItem(ghost, "Ghost", 2),
-            _navItem(updated, "Updates", 3),
-            _navItem(settings, "Settings", 4),
+            // _navItem(updated, "Updates", 3),
+            _navItem(settings, "Settings", 3),
           ],
         ),
       ),

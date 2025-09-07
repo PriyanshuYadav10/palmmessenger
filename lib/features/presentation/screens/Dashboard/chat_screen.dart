@@ -1,13 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:palmmessenger/features/provider/chatProvider.dart';
 import 'package:provider/provider.dart';
 import '../../../../config/theme/app_themes.dart';
 import '../../../../config/theme/spaces.dart';
 import '../../../../config/theme/textstyles.dart';
 import '../../../../core/constants/images.dart';
 import '../../../data/encryption/rsa_helper.dart';
+import '../../../data/model/group_model.dart';
 import '../../../data/model/message_model.dart';
 import '../../../data/model/user_model.dart';
 import '../../../helper/database_service.dart';
@@ -47,114 +48,145 @@ class _ChatListScreenState extends State<ChatListScreen> {
   void initState() {
     super.initState();
     _loadChats();
+
+    Provider.of<ChatProvider>(context, listen: false).userGroups();
     Provider.of<HomeProvider>(context, listen: false).fetchContactsAndSend();
+
     widget.socket.connect();
-    widget.socket.onMessageReceived = (msg) async {
-      if (msg["message"] == "image" && msg["attachment"] != null) {
+
+    // ✅ Listen to new messages from socket
+    widget.socket.onMessageReceived =((msg) async {
+      print("📩 Incoming msg: $msg");
+
+      final bool isGroup =
+          msg['isGroup'] == true || (msg['groupId'] != null && msg['groupId'].toString().isNotEmpty);
+
+      if (isGroup) {
+        final groupId = msg['groupId'] ?? '';
+        final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+        final group = chatProvider.groupModels.firstWhere(
+              (g) => g.sId == groupId,
+          orElse: () => GroupModel(),
+        );
+
+        final contentType = msg["message"]?.toString().toLowerCase();
+        final isImage = contentType == "image";
+        final isAudio = contentType == "audio";
 
         final model = MessageModel(
           id: msg['messageId'],
           senderId: msg['from'],
-          receiverId: msg['to'],
-          content:  '',
-          encrypted: '',
-          attachment: msg['attachment']??'',
-          timestamp: DateTime.fromMillisecondsSinceEpoch(msg['timestamp']),
-        );
-
-        // Save message
-        await widget.storage.saveMessage(model);
-
-        // Find peer user (the other user in this chat)
-        final peerId = model.senderId == widget.localUserId ? model.receiverId : model.senderId;
-
-        // Check if user already exists
-        var peerUser = await widget.storage.getUser(peerId);
-
-        if (peerUser == null) {
-          // Not in storage, try to find in contacts (from DB or Provider)
-          final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-          final contact = homeProvider.contact?.users?.firstWhere(
-                (c) => c.sId == peerId,
-          );
-
-          if (contact != null) {
-            // Save contact into storage
-            peerUser = UserModel(
-              id: contact.sId.toString(),
-              name: contact.name.toString(),
-              publicKey: contact.publicKey.toString(),
-              avatarPath: contact.profilePicture.toString(),
-            );
-            await widget.storage.saveUser(peerUser);
-          }
-        }
-      }else {
-        final decrypted = widget.rsaHelper.decryptWithPrivateKey(
-          msg['message'],
-          widget.privateKeyPem,
-        );
-
-
-        final model = MessageModel(
-          id: msg['messageId'],
-          senderId: msg['from'],
-          receiverId: msg['to'],
-          content: decrypted ?? '',
-          encrypted: msg['message'],
+          receiverId: groupId,
+          content: isImage
+              ? "image"
+              : isAudio
+              ? "audio"
+              : widget.rsaHelper.decryptWithPrivateKey(
+            msg['message'],
+            group.privateKey.toString(),
+          ),
+          groupId: groupId,
+          encrypted: isImage || isAudio ? "" : msg['message'],
           attachment: msg['attachment'] ?? '',
           timestamp: DateTime.fromMillisecondsSinceEpoch(msg['timestamp']),
         );
 
-        // Save message
+        await widget.storage.saveMessage(model);
+      } else {
+        // 1-to-1
+        final peerId =
+        msg['from'] == widget.localUserId ? msg['to'] : msg['from'];
+
+        final contentType = msg["message"]?.toString().toLowerCase();
+        final decrypted = (contentType == "image" || contentType == "audio")
+            ? contentType
+            : widget.rsaHelper.decryptWithPrivateKey(
+          msg['message'],
+          widget.privateKeyPem,
+        );
+
+        final model = MessageModel(
+          id: msg['messageId'],
+          senderId: msg['from'],
+          receiverId: msg['to'],
+          groupId: msg['groupId'] ?? '',
+          content: decrypted ?? '',
+          encrypted: msg['message'] ?? '',
+          attachment: msg['attachment'] ?? '',
+          timestamp: DateTime.fromMillisecondsSinceEpoch(msg['timestamp']),
+        );
+
         await widget.storage.saveMessage(model);
 
-        // Find peer user (the other user in this chat)
-        final peerId = model.senderId == widget.localUserId
-            ? model.receiverId
-            : model.senderId;
-
-        // Check if user already exists
+        // Save peer if new
         var peerUser = await widget.storage.getUser(peerId);
-
         if (peerUser == null) {
-          // Not in storage, try to find in contacts (from DB or Provider)
-          final homeProvider = Provider.of<HomeProvider>(
-              context, listen: false);
+          final homeProvider = Provider.of<HomeProvider>(context, listen: false);
           final contact = homeProvider.contact?.users?.firstWhere(
                 (c) => c.sId == peerId,
+            // orElse: () => null,
           );
 
-          if (contact != null) {
-            // Save contact into storage
-            peerUser = UserModel(
-              id: contact.sId.toString(),
-              name: contact.name.toString(),
-              publicKey: contact.publicKey.toString(),
-              avatarPath: contact.profilePicture.toString(),
-            );
-            await widget.storage.saveUser(peerUser);
-          }
+          peerUser = UserModel(
+            id: contact?.sId ?? peerId,
+            name: contact?.name ?? "Unknown",
+            publicKey: contact?.publicKey ?? "",
+            avatarPath: contact?.profilePicture ?? "",
+          );
+          await widget.storage.saveUser(peerUser);
         }
       }
-      // Now reload chats
-      _loadChats();
-    };
 
+      _loadChats();
+    });
   }
+
   Future<void> _loadChats() async {
-    final latestMessages = await widget.storage.getLatestMessages(widget.localUserId);
+    final latestMessages =
+    await widget.storage.getLatestMessages(widget.localUserId);
 
     List<LatestChatModel> chats = [];
+
+    // ---- SINGLE ----
     for (var msg in latestMessages) {
-      final peerId = msg.senderId == widget.localUserId ? msg.receiverId : msg.senderId;
+      final peerId =
+      msg.senderId == widget.localUserId ? msg.receiverId : msg.senderId;
       final peerUser = await widget.storage.getUser(peerId);
       if (peerUser != null) {
-        final unread = await widget.storage.getUnreadMessageCount(widget.localUserId, peerId);
-        chats.add(LatestChatModel(message: msg, peerUser: peerUser, unreadCount: unread.toString()));
+        final unread =
+        await widget.storage.getUnreadMessageCount(widget.localUserId, peerId);
+        chats.add(LatestChatModel(
+          message: msg,
+          peerUser: peerUser,
+          unreadCount: unread.toString(),
+          isGroup: false,
+        ));
       }
     }
 
+    // ---- GROUP ----
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    for (var group in chatProvider.groupModels) {
+      final groupMessages =
+      await widget.storage.getMessages(widget.localUserId, group.sId ?? "");
+      if (groupMessages.isNotEmpty) {
+        final lastMsg = groupMessages.last;
+        final unread = groupMessages.where((m) => !m.isRead).length;
+        chats.add(LatestChatModel(
+          message: lastMsg,
+          peerUser: null,
+          unreadCount: unread.toString(),
+          isGroup: true,
+          groupName: group.name,
+          groupId: group.sId,
+          groupAvatar:  "",
+          groupPublicKey: group.publicKey,
+          groupPrivateKey: group.privateKey,
+        ));
+      }
+    }
+
+    chats.sort((a, b) => b.message.timestamp.compareTo(a.message.timestamp));
     _chatStreamController.add(chats);
   }
 
@@ -163,8 +195,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
     _chatStreamController.close();
     super.dispose();
   }
+
   int selectedFilter = 0;
-  TextEditingController searchCtrl =TextEditingController();
+  TextEditingController searchCtrl = TextEditingController();
   List<String> filters = ['All', 'Unread', 'Groups', 'Calls'];
 
   @override
@@ -176,40 +209,57 @@ class _ChatListScreenState extends State<ChatListScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
+              // Header
               Padding(
-                padding: const EdgeInsets.symmetric( vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GradientText('Chats',style: Styles.boldTextStyle(size: 40)),
+                    GradientText('Chats',
+                        style: Styles.boldTextStyle(size: 40)),
                     Row(
                       children: [
-                        Image.asset(chat_people,width:35,height: 25,fit: BoxFit.cover,),
+                        Image.asset(chat_people,
+                            width: 35, height: 25, fit: BoxFit.cover),
                         wSpace(10),
                         InkWell(
-                            onTap: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ContactListScreen(
-                                    localUserId: widget.localUserId,
-                                    rsaHelper: widget.rsaHelper,
-                                    privateKeyPem: widget.privateKeyPem,
-                                    storage: widget.storage,
-                                    socket: widget.socket,
-                                  ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ContactListScreen(
+                                  localUserId: widget.localUserId,
+                                  rsaHelper: widget.rsaHelper,
+                                  privateKeyPem: widget.privateKeyPem,
+                                  storage: widget.storage,
+                                  socket: widget.socket,
                                 ),
-                              );
-                            },
-                            child: Image.asset(add,width:40,fit: BoxFit.cover)),
+                              ),
+                            );
+                          },
+                          child: Image.asset(add, width: 40, fit: BoxFit.cover),
+                        ),
                       ],
                     )
                   ],
                 ),
               ),
               hSpace(20),
-              buildTextField(searchCtrl, 'search', MediaQuery.sizeOf(context).width, 45, TextInputType.text,prefixIcon: Icon(Icons.search,color: ColorResources.whiteColor),postfixIcon: Icon(Icons.mic,color: ColorResources.whiteColor),radius:40, ),
+              buildTextField(
+                searchCtrl,
+                'search',
+                MediaQuery.sizeOf(context).width,
+                45,
+                TextInputType.text,
+                prefixIcon:
+                Icon(Icons.search, color: ColorResources.whiteColor),
+                postfixIcon:
+                Icon(Icons.mic, color: ColorResources.whiteColor),
+                radius: 40,
+              ),
               hSpace(20),
+
+              // Filters
               SizedBox(
                 height: 30,
                 child: ListView.builder(
@@ -221,24 +271,25 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       onTap: () => setState(() => selectedFilter = index),
                       child: Container(
                         decoration: BoxDecoration(
-                          gradient:isSelected? GradientColor.gradient1:null,
+                          gradient:
+                          isSelected ? GradientColor.gradient1 : null,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         margin: const EdgeInsets.symmetric(horizontal: 8),
                         child: Container(
                           alignment: Alignment.center,
-                          margin: const EdgeInsets.symmetric(horizontal: 2,vertical: 2),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          margin: const EdgeInsets.all(2),
+                          padding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? ColorResources.blackColor
                                 : ColorResources.secondaryColor,
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text(
-                              filters[index],
-                              style:Styles.semiBoldTextStyle(color:ColorResources.whiteColor,size: 14)
-                          ),
+                          child: Text(filters[index],
+                              style: Styles.semiBoldTextStyle(
+                                  color: ColorResources.whiteColor, size: 14)),
                         ),
                       ),
                     );
@@ -246,8 +297,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 ),
               ),
               hSpace(15),
+
+              // Chats
               Expanded(
-                child:StreamBuilder<List<LatestChatModel>>(
+                child: StreamBuilder<List<LatestChatModel>>(
                   stream: _chatStreamController.stream,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
@@ -262,29 +315,43 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       itemBuilder: (context, index) {
                         final chat = chats[index];
                         return InkWell(
-                          onTap: (){
+                          onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => ChatScreen(
-                                  peer: chat.peerUser,
+                                  peer: chat.isGroup ? null : chat.peerUser!,
                                   localUserId: widget.localUserId,
                                   rsaHelper: widget.rsaHelper,
                                   privateKeyPem: widget.privateKeyPem,
                                   storage: widget.storage,
                                   socket: widget.socket,
+                                  groupId: chat.isGroup ? chat.groupId : null,
+                                  groupName:
+                                  chat.isGroup ? chat.groupName : null,
+                                  groupPrivateKey:
+                                  chat.isGroup ? chat.groupPrivateKey : null,
+                                  groupPublicKey:
+                                  chat.isGroup ? chat.groupPublicKey : null,
                                 ),
                               ),
-                            ).then((_) {
-                              _loadChats();
-                            });
+                            ).then((_) => _loadChats());
                           },
                           child: _chatTile(
-                            chat.peerUser.name,
-                            chat.message.content.toString()==''?'send a image':'',
-                            DateFormat('hh:mm a').format(chat.message.timestamp),
-                            chat.peerUser.avatarPath,
-                            unread: int.parse(chat.unreadCount.toString()),
+                            chat.isGroup
+                                ? chat.groupName!
+                                : chat.peerUser!.name,
+                            chat.message.content == "image"
+                                ? "📷 Image"
+                                : chat.message.content == "audio"
+                                ? "🎵 Audio"
+                                : chat.message.content,
+                            DateFormat('hh:mm a')
+                                .format(chat.message.timestamp),
+                            chat.isGroup
+                                ? chat.groupAvatar
+                                : chat.peerUser!.avatarPath,
+                            unread: int.parse(chat.unreadCount),
                           ),
                         );
                       },
@@ -299,14 +366,21 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 }
-Widget _chatTile(String name, String message, String time, String? avatarPath, {int unread = 0}) {
+
+Widget _chatTile(String name, String message, String time, String? avatarPath,
+    {int unread = 0}) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 10),
     child: Row(
       children: [
         CircleAvatar(
           backgroundColor: ColorResources.secondaryColor,
-          backgroundImage: NetworkImage(avatarPath!),
+          backgroundImage: (avatarPath != null && avatarPath.isNotEmpty)
+              ? NetworkImage(avatarPath)
+              : null,
+          child: (avatarPath == null || avatarPath.isEmpty)
+              ? Icon(Icons.person, color: Colors.white)
+              : null,
           radius: 25,
         ),
         wSpace(10),
@@ -315,11 +389,14 @@ Widget _chatTile(String name, String message, String time, String? avatarPath, {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(name,
-                  style: Styles.semiBoldTextStyle(size: 15,color: ColorResources.whiteColor)),
+                  style: Styles.semiBoldTextStyle(
+                      size: 15, color: ColorResources.whiteColor)),
               hSpace(4),
               Text(message,
                   overflow: TextOverflow.ellipsis,
-                  style:  Styles.mediumTextStyle(color: ColorResources.whiteColor.withOpacity(0.7),size: 15)),
+                  style: Styles.mediumTextStyle(
+                      color: ColorResources.whiteColor.withOpacity(0.7),
+                      size: 15)),
             ],
           ),
         ),
@@ -327,7 +404,8 @@ Widget _chatTile(String name, String message, String time, String? avatarPath, {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(time,
-                style: Styles.mediumTextStyle(color: ColorResources.whiteColor.withOpacity(0.9))),
+                style: Styles.mediumTextStyle(
+                    color: ColorResources.whiteColor.withOpacity(0.9))),
             hSpace(4),
             if (unread > 0)
               Container(
@@ -343,10 +421,9 @@ Widget _chatTile(String name, String message, String time, String? avatarPath, {
                     color: ColorResources.blackColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    unread.toString(),
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                  ),
+                  child: Text(unread.toString(),
+                      style:
+                      const TextStyle(color: Colors.white, fontSize: 12)),
                 ),
               ),
           ],
@@ -355,10 +432,27 @@ Widget _chatTile(String name, String message, String time, String? avatarPath, {
     ),
   );
 }
+
 class LatestChatModel {
   final MessageModel message;
-  final UserModel peerUser;
+  final UserModel? peerUser;
   final String unreadCount;
+  final bool isGroup;
+  final String? groupName;
+  final String? groupId;
+  final String? groupAvatar;
+  final String? groupPublicKey;
+  final String? groupPrivateKey;
 
-  LatestChatModel({required this.message, required this.peerUser,required this.unreadCount});
+  LatestChatModel({
+    required this.message,
+    this.peerUser,
+    required this.unreadCount,
+    this.isGroup = false,
+    this.groupName,
+    this.groupId,
+    this.groupAvatar,
+    this.groupPrivateKey,
+    this.groupPublicKey,
+  });
 }
