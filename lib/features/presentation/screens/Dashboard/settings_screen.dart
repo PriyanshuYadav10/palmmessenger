@@ -124,7 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Text(
                           authProvider.userProfileDataModel?.profile?.bio ?? '',
                           style: Styles.mediumTextStyle(
-                            color: ColorResources.whiteColor,
+                            color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                             size: 18,
                           ),
                         ),
@@ -139,7 +139,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Get.offAll(LoginScreen());
                           });
                         },
-                        child: SizedBox(width: 35, child: Image.asset(qr_code))),
+                        child: SizedBox(width: 35, child: Icon(Icons.logout_rounded,color:appTheme.toString().toLowerCase()=='dark'? ColorResources.whiteColor: ColorResources.appColor,))),
                   ],
                 ),
                 hSpace(15),
@@ -171,19 +171,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           width: 25,
                           height: 25,
                           fit: BoxFit.fill,
-                          color: ColorResources.whiteColor,
+                          color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                         ),
                         title: Text(
                           tile.title,
                           style: Styles.semiBoldTextStyle(
-                            color: ColorResources.whiteColor,
+                            color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                             size: 16,
                           ),
                         ),
                         subtitle: Text(
                           tile.subtitle,
                           style: Styles.mediumTextStyle(
-                            color: ColorResources.whiteColor,
+                            color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                             size: 16,
                           ),
                         ),

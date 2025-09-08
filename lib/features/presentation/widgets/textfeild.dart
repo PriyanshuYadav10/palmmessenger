@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../config/theme/app_themes.dart';
 import '../../../config/theme/textstyles.dart';
+import '../utility/global.dart';
 
 Widget buildTextField(
   TextEditingController controller,
@@ -106,15 +107,15 @@ Widget buildTextField(
           errorText: errorText,
           hintStyle:Styles.semiBoldTextStyle(
             size: 16,
-            color:txtColor?? ColorResources.whiteColor.withOpacity(0.8)
+            color:txtColor ?? (appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor.withOpacity(0.8))
           ),
           labelStyle: txtStyle ??
               Styles.mediumTextStyle(
-                  size: 16, color: txtColor ?? ColorResources.whiteColor),
+                  size: 16, color: txtColor ?? (appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor)),
         ),
         style: txtStyle ??
             Styles.mediumTextStyle(
-                size: 16, color: txtColor ?? ColorResources.whiteColor)),
+                size: 16, color: txtColor ?? (appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor))),
   );
 }
 

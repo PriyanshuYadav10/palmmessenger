@@ -5,6 +5,7 @@ import 'package:palmmessenger/config/theme/spaces.dart';
 import 'package:palmmessenger/config/theme/textstyles.dart';
 
 import '../../../../../core/constants/images.dart';
+import '../../../utility/global.dart';
 
 class BroadcastMessageScreen extends StatefulWidget {
   const BroadcastMessageScreen({super.key});
@@ -31,17 +32,19 @@ class _BroadcastMessageScreenState extends State<BroadcastMessageScreen> {
       ),
       body: Container(
         width:double.infinity,
-        decoration: BoxDecoration(
+        decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
             image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+        ):BoxDecoration(
+            color: ColorResources.whiteColor
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ListView(
          children: [
            Row(
              children: [
-               Image.asset(add,width:50,fit: BoxFit.cover),
+               Image.asset(add,width:50,fit: BoxFit.cover,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.appColor:ColorResources.whiteColor,),
                wSpace(15),
-               Text('Create a broadcast',style: Styles.mediumTextStyle(color: ColorResources.whiteColor,size: 20))
+               Text('Create a broadcast',style: Styles.mediumTextStyle(color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor,size: 20))
              ],
            ),
 
@@ -54,17 +57,17 @@ class _BroadcastMessageScreenState extends State<BroadcastMessageScreen> {
                return Column(
                  crossAxisAlignment: CrossAxisAlignment.end,
                  children: [
-                   Text('created on 24/01/24 at 12:00 am',textAlign: TextAlign.right, style: Styles.mediumTextStyle(size: 12,color: ColorResources.whiteColor)),
+                   Text('created on 24/01/24 at 12:00 am',textAlign: TextAlign.right, style: Styles.mediumTextStyle(size: 12,color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor)),
                    ListTile(
                      leading: Image.asset(
                      broadcast,
                        width: 25,
                        height: 25,
                        fit: BoxFit.fill,
-                       color: ColorResources.whiteColor,
+                       color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor,
                      ),
-                     title: Text('Broadcast $index',style: Styles.semiBoldTextStyle(color: ColorResources.whiteColor,size: 16),),
-                     subtitle: Text('Rachel, Emma, Tom, John, Keli',style: Styles.mediumTextStyle(color: ColorResources.whiteColor,size: 16),),
+                     title: Text('Broadcast $index',style: Styles.semiBoldTextStyle(color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor,size: 16),),
+                     subtitle: Text('Rachel, Emma, Tom, John, Keli',style: Styles.mediumTextStyle(color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,size: 16),),
                      contentPadding: EdgeInsets.symmetric(horizontal: 5),
                    ),
                  ],

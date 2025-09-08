@@ -12,6 +12,7 @@ import '../../../../config/theme/textstyles.dart';
 import '../../../../core/constants/images.dart';
 import '../../../helper/alertDiaolg.dart';
 import '../../../provider/authProvider.dart';
+import '../../utility/global.dart';
 import '../../utility/gradient_text.dart';
 import '../../widgets/button.dart';
 import '../../widgets/textfeild.dart';
@@ -65,15 +66,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         builder: (context, authProvider, _) {
         return Scaffold(
           body: Container(
-            decoration: BoxDecoration(
+            decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
                 image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+            ):BoxDecoration(
+                color: ColorResources.whiteColor
             ),
             padding: const EdgeInsets.symmetric(horizontal: 40,),
             child: ListView(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 120),
-                  child: GradientText('Palm Messenger',style: Styles.extraBoldTextStyle(size: 50),),
+                  child: GradientText('Palm Messenger',style: Styles.extraBoldTextStyle(size: 50,),),
                 ),
                 hSpace(80),
                 Container(
@@ -143,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 selectedValue=='Register With Mobile'?Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Enter Phone number',style: Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor),),
+                    Text('Enter Phone number',style: Styles.mediumTextStyle(size: 15,color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),),
                     hSpace(10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,15 +182,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                   // Optional. Styles the text in the search field
                                   searchTextStyle: TextStyle(
-                                    color: Colors.blue,
+                                    color: appTheme.toString().toLowerCase()!='dark'?Colors.blue:Colors.white,
                                     fontSize: 18,
                                   ),
                                 ),
                               );
                             },
-                            child: buildTextField(countryCodeCtrl, '', MediaQuery.sizeOf(context).width*0.15, 45  ,TextInputType.text,isEnabled: false )),
+                            child: buildTextField(countryCodeCtrl, '', MediaQuery.sizeOf(context).width*0.15, 45  ,TextInputType.text,isEnabled: false,txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor )),
                         buildTextField(phoneCtrl, '', MediaQuery.sizeOf(context).width*0.62, 45  ,TextInputType.text,errorText: errorLoginText,fun: (){
-                        }),
+                        },txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                       ],
                     ),
                   ],):
@@ -203,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         wSpace(5),
                         SizedBox(
                             width: MediaQuery.sizeOf(context).width*0.68,
-                            child: Text('Your Palm ID will be generated after payment using a secure, quantum-safr process and will look like:',style: Styles.regularTextStyle(size: 13,color: ColorResources.whiteColor),))
+                            child: Text('Your Palm ID will be generated after payment using a secure, quantum-safr process and will look like:',style: Styles.regularTextStyle(size: 13,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),))
                       ],
                     ),
                     hSpace(15),
@@ -213,13 +216,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Why Palm ID?', style: Styles.mediumTextStyle(size: 18,color: ColorResources.whiteColor),),
+                          Text('Why Palm ID?', style: Styles.mediumTextStyle(size: 18,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),),
                           hSpace(8),
-                          Text('• Anonymous, phone-free login', style: Styles.mediumTextStyle(size: 13,color: ColorResources.whiteColor),),
+                          Text('• Anonymous, phone-free login', style: Styles.mediumTextStyle(size: 13,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),),
                           hSpace(5),
-                          Text('• End-to-end quantum encryption', style: Styles.mediumTextStyle(size: 13,color: ColorResources.whiteColor),),
+                          Text('• End-to-end quantum encryption', style: Styles.mediumTextStyle(size: 13,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),),
                           hSpace(5),
-                          Text('• Lifetime secure handle', style: Styles.mediumTextStyle(size: 13,color: ColorResources.whiteColor),),
+                          Text('• Lifetime secure handle', style: Styles.mediumTextStyle(size: 13,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),),
                         ],
                       ),
                     ),
@@ -238,7 +241,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onTap: (){
                       Get.offAll(LoginScreen());
                     },
-                    child: Text( "Already have a Palm ID?",textAlign: TextAlign.center, style:Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor)))
+                    child: Text( "Already have a Palm ID?",textAlign: TextAlign.center, style:Styles.mediumTextStyle(size: 15,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor)))
               ],
             ),
           ),

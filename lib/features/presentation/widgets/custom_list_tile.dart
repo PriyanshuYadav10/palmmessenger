@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:palmmessenger/config/theme/app_themes.dart';
 
+import '../utility/global.dart';
+
 class CustomListTile extends StatelessWidget {
   final IconData leadingIcon;
   final String title;
@@ -16,10 +18,10 @@ class CustomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(leadingIcon, color: ColorResources.whiteColor),
+      leading: Icon(leadingIcon, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
       title: Text(
         title,
-        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500,color: ColorResources.whiteColor),
+        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
       ),
       onTap: onTap,
     );

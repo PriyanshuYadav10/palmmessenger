@@ -13,6 +13,7 @@ import '../../../../data/model/group_model.dart';
 import '../../../../helper/database_service.dart';
 import '../../../../helper/websocket_service.dart';
 import '../../../utility/app_shared_prefrence.dart';
+import '../../../utility/global.dart';
 import '../../../widgets/button.dart';
 
 class GroupDescriptionScreen extends StatefulWidget {
@@ -87,18 +88,17 @@ class _GroupDescriptionScreenState extends State<GroupDescriptionScreen> {
         child: Container(
           height: MediaQuery.sizeOf(context).height,
           padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(app_bg),
-              fit: BoxFit.cover,
-            ),
+          decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+              image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+          ):BoxDecoration(
+              color: ColorResources.whiteColor
           ),
           child: Column(
             children: [
               hSpace(30),
-              buildTextField(_groupNameController, 'Add group description', MediaQuery.sizeOf(context).width ,45,TextInputType.text),
+              buildTextField(_groupNameController, 'Add group description', MediaQuery.sizeOf(context).width ,45,TextInputType.text,txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
               hSpace(20),
-              Text('The group description is visible to members of the group and people invited to this group.',style: Styles.mediumTextStyle(color: ColorResources.whiteColor,size: 12),),
+              Text('The group description is visible to members of the group and people invited to this group.',style: Styles.mediumTextStyle(color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,size: 12),),
               hSpace(200),
               Expanded(
                 child: Row(

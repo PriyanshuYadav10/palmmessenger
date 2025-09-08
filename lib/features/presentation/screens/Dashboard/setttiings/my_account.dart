@@ -5,6 +5,8 @@ import 'package:palmmessenger/config/theme/textstyles.dart';
 import 'package:palmmessenger/core/constants/images.dart';
 import 'package:palmmessenger/features/presentation/widgets/custom_list_tile.dart';
 
+import '../../../utility/global.dart';
+
 class MyAccountScreen extends StatefulWidget {
   const MyAccountScreen({super.key});
 
@@ -40,8 +42,10 @@ class _MyAccountState extends State<MyAccountScreen> {
       ),
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover),
+        decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+            image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+        ):BoxDecoration(
+            color: ColorResources.whiteColor
         ),
         child: Padding(
           padding: const EdgeInsets.all(15),
@@ -51,7 +55,6 @@ class _MyAccountState extends State<MyAccountScreen> {
                 leadingIcon: Icons.security,
                 title: "Security Notifications",
                 onTap: () {},
-                
               ),
               CustomListTile(
                 leadingIcon: Icons.manage_accounts,

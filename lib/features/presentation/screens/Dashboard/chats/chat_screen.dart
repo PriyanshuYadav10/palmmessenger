@@ -19,6 +19,7 @@ import '../../../../data/model/message_model.dart';
 import '../../../../data/model/user_model.dart';
 import '../../../../helper/database_service.dart';
 import '../../../../helper/websocket_service.dart';
+import '../../../utility/global.dart';
 import '../../../widgets/textfeild.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -258,8 +259,10 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover),
+        decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+            image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+        ):BoxDecoration(
+            color: ColorResources.whiteColor
         ),
         child: Column(
           children: [

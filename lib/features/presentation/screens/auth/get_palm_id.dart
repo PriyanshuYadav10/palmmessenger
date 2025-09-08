@@ -164,9 +164,11 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
         builder: (context, authProvider, _) {
         return Scaffold(
           body: Container(
-            decoration: BoxDecoration(
-                image:
-                    DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover)),
+            decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+                image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+            ):BoxDecoration(
+                color: ColorResources.whiteColor
+            ),
             padding: const EdgeInsets.symmetric(
               horizontal: 40,
             ),
@@ -187,7 +189,7 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
                   'Quantum-Secure Identity for',
                   textAlign: TextAlign.center,
                   style: Styles.mediumTextStyle(
-                      size: 14, color: ColorResources.whiteColor),
+                      size: 14, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),
                 ),
                 hSpace(5),
                 GradientText(
@@ -198,32 +200,32 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
                 Text(
                   'Name(optional)',
                   style: Styles.mediumTextStyle(
-                      size: 15, color: ColorResources.whiteColor),
+                      size: 15, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 ),
                 hSpace(5),
                 buildTextField(nameCtrl, '',
                     MediaQuery.sizeOf(context).width * 0.57, 45, TextInputType.text,
-                    fun: () {}),
+                    fun: () {},txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 hSpace(15),
                 Text(
                   'Create password',
                   style: Styles.mediumTextStyle(
-                      size: 15, color: ColorResources.whiteColor),
+                      size: 15, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 ),
                 hSpace(5),
                 buildTextField(passwordCtrl, '',
                     MediaQuery.sizeOf(context).width * 0.57, 45, TextInputType.text,
-                    fun: () {}),
+                    fun: () {},txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 hSpace(15),
                 Text(
                   'Confirm password',
                   style: Styles.mediumTextStyle(
-                      size: 15, color: ColorResources.whiteColor),
+                      size: 15, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),
                 ),
                 hSpace(5),
                 buildTextField(confirmPasswordCtrl, '',
                     MediaQuery.sizeOf(context).width * 0.57, 45, TextInputType.text,
-                    fun: () {}),
+                    fun: () {},txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 hSpace(20),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,15 +234,15 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
                         width: 25,
                         child: Icon(
                           Icons.lightbulb_outline_rounded,
-                          color: ColorResources.whiteColor,
+                          color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                         )),
                     wSpace(5),
                     SizedBox(
                         width: MediaQuery.sizeOf(context).width * 0.68,
                         child: Text(
-                          'Your Palm ID will be generated after payment using a secure, quantum-safr process and will look like:',
+                          'Your Palm ID will be generated after payment using a secure, quantum-encryption process and will look like:',
                           style: Styles.regularTextStyle(
-                              size: 13, color: ColorResources.whiteColor),
+                              size: 13, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),
                         ))
                   ],
                 ),
@@ -254,25 +256,25 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
                       Text(
                         'Why Palm ID?',
                         style: Styles.mediumTextStyle(
-                            size: 18, color: ColorResources.whiteColor),
+                            size: 18, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),
                       ),
                       hSpace(8),
                       Text(
                         '• Anonymous, phone-free login',
                         style: Styles.mediumTextStyle(
-                            size: 13, color: ColorResources.whiteColor),
+                            size: 13, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                       ),
                       hSpace(5),
                       Text(
                         '• End-to-end quantum encryption',
                         style: Styles.mediumTextStyle(
-                            size: 13, color: ColorResources.whiteColor),
+                            size: 13, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                       ),
                       hSpace(5),
                       Text(
                         '• Lifetime secure handle',
                         style: Styles.mediumTextStyle(
-                            size: 13, color: ColorResources.whiteColor),
+                            size: 13, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                       ),
                     ],
                   ),
@@ -289,7 +291,7 @@ class _GetPalmIdScreenState extends State<GetPalmIdScreen> {
                     child: Text("Already have a Palm ID?",
                         textAlign: TextAlign.center,
                         style: Styles.mediumTextStyle(
-                            size: 15, color: ColorResources.whiteColor)))
+                            size: 15, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor)))
               ],
             ),
           ),

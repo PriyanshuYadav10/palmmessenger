@@ -29,9 +29,11 @@ class _PalmIdGenerateScreenState extends State<PalmIdGenerateScreen> {
         builder: (context, authProvider, _) {
         return Scaffold(
           body: Container(
-            decoration: BoxDecoration(
-                image:
-                DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover)),
+            decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+                image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+            ):BoxDecoration(
+                color: ColorResources.whiteColor
+            ),
             padding: const EdgeInsets.symmetric(
               horizontal: 40,
             ),
@@ -39,7 +41,7 @@ class _PalmIdGenerateScreenState extends State<PalmIdGenerateScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 120),
-                  child: GradientText('Welcome ${widget.name??''} !',style: Styles.extraBoldTextStyle(size: 50),),
+                  child: GradientText('Welcome ${widget.name??''} !',style: Styles.extraBoldTextStyle(size: 50,color:  appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),),
                 ),
                 hSpace(80),
                 Container(
@@ -65,7 +67,7 @@ class _PalmIdGenerateScreenState extends State<PalmIdGenerateScreen> {
                           children: [
                             SizedBox(
                                 width:MediaQuery.sizeOf(context).width*0.4,
-                                child: Text('${authProvider.palmIdModel?.palmId.toString()}',style: Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor),)),
+                                child: Text('${authProvider.palmIdModel?.palmId.toString()}',style: Styles.mediumTextStyle(size: 15,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:  ColorResources.whiteColor),)),
                             InkWell(
                               onTap: (){
                                 setState(() {
@@ -138,7 +140,7 @@ class _PalmIdGenerateScreenState extends State<PalmIdGenerateScreen> {
                       child: Text("Need Help? Contact support via Palm Web Portal",
                           textAlign: TextAlign.center,
                           style: Styles.mediumTextStyle(
-                              size: 15, color: ColorResources.whiteColor.withOpacity(0.6)))),
+                              size: 15, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor.withOpacity(0.6):  ColorResources.whiteColor.withOpacity(0.6)))),
                 )
               ],
             ),

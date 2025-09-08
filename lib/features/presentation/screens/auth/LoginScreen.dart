@@ -118,8 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (context, authProvider, _) {
         return Scaffold(
           body: Container(
-            decoration: BoxDecoration(
+            decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
               image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+            ):BoxDecoration(
+              color: ColorResources.whiteColor
             ),
             padding: const EdgeInsets.symmetric(horizontal: 40,),
             child: ListView(
@@ -129,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: GradientText('Palm Messenger',style: Styles.extraBoldTextStyle(size: 50),),
                 ),
                 hSpace(80),
-                Text('Enter Phone number or Palm ID',style: Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor),),
+                Text('Enter Phone number or Palm ID',style: Styles.mediumTextStyle(size: 15,color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),),
                 hSpace(10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -154,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   topLeft: Radius.circular(40.0),
                                   topRight: Radius.circular(40.0),
                                 ),
-                                textStyle: TextStyle(color: ColorResources.whiteColor),
+                                textStyle: TextStyle(color:ColorResources.whiteColor),
                                 inputDecoration: InputDecoration(
                                   labelText: 'Search',
                                   hintText: 'Start typing to search',
@@ -167,16 +169,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 // Optional. Styles the text in the search field
                                 searchTextStyle: TextStyle(
-                                  color: Colors.blue,
+                                  color: appTheme.toString().toLowerCase()!='dark'?Colors.blue: Colors.white,
                                   fontSize: 18,
                                 ),
                               ),
                             );
                           },
-                          child: buildTextField(countryCodeCtrl, '', MediaQuery.sizeOf(context).width*0.15, 45  ,TextInputType.text,isEnabled: false )),
+                          child: buildTextField(countryCodeCtrl, '', MediaQuery.sizeOf(context).width*0.15, 45  ,TextInputType.text,isEnabled: false ,txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor)),
                     ),
                     buildTextField(loginCtrl, '',!showPasswordField? MediaQuery.sizeOf(context).width*0.62:MediaQuery.sizeOf(context).width-80, 45  ,TextInputType.text,errorText: errorLoginText,fun: (){
-                    }),
+                    },txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                   ],
                 ),
                 Visibility(
@@ -185,10 +187,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       hSpace(15),
-                      Text('Password',style: Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor),),
+                      Text('Password',style: Styles.mediumTextStyle(size: 15,color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),),
                       hSpace(10),
                       buildTextField(passwordCtrl, '', MediaQuery.sizeOf(context).width, 45  ,TextInputType.visiblePassword,errorText: errorPasswordText,fun: (){
-                      }),
+                      },txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                     ],
                   ),
                 ),
@@ -205,12 +207,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text( "Don't have an account? ",style:Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor)),
+                    Text( "Don't have an account? ",style:Styles.mediumTextStyle(size: 15,color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor)),
                     InkWell(
                         onTap: (){
                           Get.offAll(RegisterScreen());
                         },
-                        child: Text( "Register",style:Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor,underlineNeeded: true))),
+                        child: Text( "Register",style:Styles.mediumTextStyle(size: 15,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor,underlineNeeded: true))),
                   ],
                 )
               ],

@@ -127,8 +127,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         builder: (context, authProvider, _) {
         return Scaffold(
           body: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover),
+            decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+                image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+            ):BoxDecoration(
+                color: ColorResources.whiteColor
             ),
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: ListView(
@@ -138,14 +140,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   'We just sent an SMS',
                   textAlign: TextAlign.center,
                   style: Styles.mediumTextStyle(
-                      size: 25, color: ColorResources.whiteColor),
+                      size: 25, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),
                 ),
                 hSpace(50),
                 Text(
                   'Enter the security code we sent to ${widget.code} ${widget.phoneNumber}',
                   textAlign: TextAlign.center,
                   style: Styles.mediumTextStyle(
-                      size: 18, color: ColorResources.whiteColor),
+                      size: 18, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:  ColorResources.whiteColor),
                 ),
                 hSpace(40),
                 OtpTextField(
@@ -155,7 +157,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   fieldWidth: 45,
                   showFieldAsBox: true,
                   textStyle:
-                      Styles.semiBoldTextStyle(color: ColorResources.whiteColor),
+                      Styles.semiBoldTextStyle(color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),
                   onCodeChanged: (String value) {},
                   handleControllers: (controllers) {
                     final otp = Provider.of<AuthProvider>(context, listen: false)
@@ -182,7 +184,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         'The OTP is will expire in 00:${_remainingTime.toString().padLeft(2, '0')}',
                         textAlign: TextAlign.center,
                         style: Styles.regularTextStyle(
-                            size: 14, color: ColorResources.thirdColor)),
+                            size: 14, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.thirdColor)),
                     InkWell(
                       onTap: () {
                         resendOtp();
@@ -191,7 +193,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           textAlign: TextAlign.center,
                           style: Styles.regularTextStyle(
                               size: 14,
-                              color: ColorResources.thirdColor,
+                              color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:  ColorResources.thirdColor,
                               underlineNeeded: true)),
                     ),
                   ],

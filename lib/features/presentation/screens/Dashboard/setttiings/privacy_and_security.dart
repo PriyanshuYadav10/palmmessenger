@@ -8,6 +8,7 @@ import 'package:palmmessenger/features/presentation/widgets/section_tile.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../provider/settingProvider.dart';
+import '../../../utility/global.dart';
 import '../../../widgets/build_tile.dart';
 
 class PrivacyAndSecurityScreen extends StatefulWidget {
@@ -68,20 +69,20 @@ class _PrivacyAndSecurityScreenState extends State<PrivacyAndSecurityScreen> {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  color: ColorResources.whiteColor,
+                style:  TextStyle(
+                  color: appTheme.toString().toLowerCase()!='dark'?ColorResources.appColor:ColorResources.whiteColor,
                   fontSize: 16,
                 ),
               ),
             ),
             DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                dropdownColor: ColorResources.appColor,
+                dropdownColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.whiteColor:ColorResources.appColor,
                 value: value,
                 icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
                 style: Styles.semiBoldTextStyle(
                   size: 14,
-                  color: ColorResources.whiteColor,
+                  color: appTheme.toString().toLowerCase()!='dark'?ColorResources.appColor:ColorResources.whiteColor,
                 ),
                 onChanged: onChanged,
                 items: privacyOptions.map((String option) {
@@ -89,7 +90,7 @@ class _PrivacyAndSecurityScreenState extends State<PrivacyAndSecurityScreen> {
                     value: option,
                     child: Text(option,
                         style: Styles.semiBoldTextStyle(
-                            color: ColorResources.whiteColor)),
+                            color: appTheme.toString().toLowerCase()!='dark'?ColorResources.appColor:ColorResources.whiteColor)),
                   );
                 }).toList(),
               ),
@@ -129,11 +130,10 @@ class _PrivacyAndSecurityScreenState extends State<PrivacyAndSecurityScreen> {
       body: SafeArea(
         child: Container(
           height: MediaQuery.sizeOf(context).height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(app_bg),
-              fit: BoxFit.cover,
-            ),
+          decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+              image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+          ):BoxDecoration(
+              color: ColorResources.whiteColor
           ),
           child: SingleChildScrollView(
             child: Padding(

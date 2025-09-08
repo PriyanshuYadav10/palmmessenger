@@ -14,6 +14,7 @@ import '../../../data/model/user_model.dart';
 import '../../../helper/database_service.dart';
 import '../../../helper/websocket_service.dart';
 import '../../../provider/homeProvider.dart';
+import '../../utility/global.dart';
 import '../../utility/gradient_text.dart';
 import '../../widgets/textfeild.dart';
 import 'chat_screen.dart';
@@ -237,7 +238,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               ),
                             );
                           },
-                          child: Image.asset(add, width: 40, fit: BoxFit.cover),
+                          child: Image.asset(add, width: 40, fit: BoxFit.cover,color:appTheme.toString().toLowerCase()=='dark'?ColorResources.whiteColor: ColorResources.appColor,),
                         ),
                       ],
                     )
@@ -252,9 +253,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 45,
                 TextInputType.text,
                 prefixIcon:
-                Icon(Icons.search, color: ColorResources.whiteColor),
-                postfixIcon:
-                Icon(Icons.mic, color: ColorResources.whiteColor),
+                Icon(Icons.search, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.appColor:ColorResources.whiteColor),
+                // postfixIcon:
+                // Icon(Icons.mic, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.appColor:ColorResources.whiteColor),
                 radius: 40,
               ),
               hSpace(20),
@@ -289,7 +290,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           ),
                           child: Text(filters[index],
                               style: Styles.semiBoldTextStyle(
-                                  color: ColorResources.whiteColor, size: 14)),
+                                  color:ColorResources.whiteColor, size: 14)),
                         ),
                       ),
                     );
@@ -378,10 +379,10 @@ Widget _chatTile(String name, String message, String time, String? avatarPath,
           backgroundImage: (avatarPath != null && avatarPath.isNotEmpty)
               ? NetworkImage(avatarPath)
               : null,
+          radius: 25,
           child: (avatarPath == null || avatarPath.isEmpty)
               ? Icon(Icons.person, color: Colors.white)
               : null,
-          radius: 25,
         ),
         wSpace(10),
         Expanded(
@@ -390,12 +391,12 @@ Widget _chatTile(String name, String message, String time, String? avatarPath,
             children: [
               Text(name,
                   style: Styles.semiBoldTextStyle(
-                      size: 15, color: ColorResources.whiteColor)),
+                      size: 15, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:  ColorResources.whiteColor)),
               hSpace(4),
               Text(message,
                   overflow: TextOverflow.ellipsis,
                   style: Styles.mediumTextStyle(
-                      color: ColorResources.whiteColor.withOpacity(0.7),
+                      color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor.withOpacity(0.7): ColorResources.whiteColor.withOpacity(0.7),
                       size: 15)),
             ],
           ),

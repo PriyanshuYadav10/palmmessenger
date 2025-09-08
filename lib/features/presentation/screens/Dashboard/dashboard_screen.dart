@@ -5,6 +5,7 @@ import 'package:palmmessenger/features/presentation/screens/Dashboard/chats/chat
 import 'package:palmmessenger/features/presentation/screens/Dashboard/settings_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../config/theme/app_themes.dart';
 import '../../../../core/constants/images.dart';
 import '../../../data/encryption/rsa_helper.dart';
 import '../../../data/encryption/rsa_key_helper.dart';
@@ -14,6 +15,7 @@ import '../../../helper/database_service.dart';
 import '../../../helper/websocket_service.dart';
 import '../../../provider/authProvider.dart';
 import '../../utility/app_shared_prefrence.dart';
+import '../../utility/global.dart';
 
 class DashboardScreen extends StatefulWidget {
 
@@ -99,17 +101,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: appTheme.toString().toLowerCase()=='dark'?ColorResources.appColor:ColorResources.whiteColor,
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover),
+        decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+            image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+        ):BoxDecoration(
+            color: ColorResources.whiteColor
         ),
         child: _screens?[selectedIndex],
       ),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.all(16),
+        // margin: EdgeInsets.all(5),
         padding: EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          // color:  Colors.transparent, // dark translucent background
+           color: ColorResources.appColor,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.blueAccent, width: 1.5),
         ),

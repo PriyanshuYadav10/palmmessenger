@@ -14,6 +14,7 @@ import '../../../../data/model/contacts_user_model.dart';
 import '../../../../helper/database_service.dart';
 import '../../../../helper/websocket_service.dart';
 import '../../../../provider/homeProvider.dart';
+import '../../../utility/global.dart';
 import 'chat_screen.dart';
 
 class ContactListScreen extends StatefulWidget {
@@ -135,9 +136,10 @@ class _ContactListScreenState extends State<ContactListScreen> {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage(app_bg), fit: BoxFit.cover),
+        decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+            image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+        ):BoxDecoration(
+            color: ColorResources.whiteColor
         ),
         child: homeProvider.isLoadingContacts
             ? Center(child: CircularProgressIndicator())
@@ -198,7 +200,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                                   Text(
                                     contact?.name ?? "Unknown",
                                     style: Styles.mediumTextStyle(
-                                        color: ColorResources.whiteColor, size: 12),
+                                        color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:   ColorResources.whiteColor, size: 12),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
@@ -219,9 +221,9 @@ class _ContactListScreenState extends State<ContactListScreen> {
                             width: 45,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                            color: ColorResources.whiteColor,
+                            color:  appTheme.toString().toLowerCase()=='dark'?ColorResources.whiteColor: ColorResources.appColor,
                             ),
-                            child: Icon(Icons.check, color: ColorResources.appColor, size: 25),
+                            child: Icon(Icons.check, color: appTheme.toString().toLowerCase()=='dark'?ColorResources.appColor: ColorResources.whiteColor, size: 25),
                           ),
                         ),
                       ),
@@ -235,14 +237,14 @@ class _ContactListScreenState extends State<ContactListScreen> {
                     itemBuilder: (context, index) {
                       if (!_isSelectingGroup && index == 0) {
                         return ListTile(
-                          leading: const CircleAvatar(
+                          leading:  CircleAvatar(
                             backgroundColor: Colors.blueAccent,
-                            child: Icon(Icons.group_add, color: Colors.white),
+                            child: Icon(Icons.group_add, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: Colors.white),
                           ),
                           title: Text(
                             "Create Group",
                             style: Styles.semiBoldTextStyle(
-                              color: ColorResources.whiteColor,
+                              color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                               size: 16,
                             ),
                           ),
@@ -278,14 +280,14 @@ class _ContactListScreenState extends State<ContactListScreen> {
                           title: Text(
                             contact.name ?? "Unknown",
                             style: Styles.semiBoldTextStyle(
-                              color: ColorResources.whiteColor,
+                              color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                               size: 16,
                             ),
                           ),
                           subtitle: Text(
                             contact.phoneNo ?? "",
                             style: Styles.mediumTextStyle(
-                              color: ColorResources.whiteColor,
+                              color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                               size: 13,
                             ),
                           ),

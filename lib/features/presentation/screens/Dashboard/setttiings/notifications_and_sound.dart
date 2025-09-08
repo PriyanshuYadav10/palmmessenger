@@ -10,6 +10,8 @@ import 'package:palmmessenger/features/presentation/widgets/section_tile.dart';
 import 'package:palmmessenger/features/provider/settingProvider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../utility/global.dart';
+
 class NotificationAndSoundScreen extends StatefulWidget {
   const NotificationAndSoundScreen({super.key});
 
@@ -74,11 +76,10 @@ class _NotificationAndSoundScreenState
       ),
       body: SafeArea(
         child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(app_bg),
-              fit: BoxFit.cover,
-            ),
+          decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+              image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+          ):BoxDecoration(
+              color: ColorResources.whiteColor
           ),
           child: SingleChildScrollView(
             child: Padding(

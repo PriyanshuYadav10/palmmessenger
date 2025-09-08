@@ -9,6 +9,8 @@ import 'package:palmmessenger/features/presentation/widgets/section_tile.dart';
 import 'package:palmmessenger/features/provider/settingProvider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../utility/global.dart';
+
 class ChatSettingsScreen extends StatefulWidget {
   const ChatSettingsScreen({super.key});
 
@@ -67,8 +69,10 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         centerTitle: false,
       ),
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover),
+        decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+            image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+        ):BoxDecoration(
+            color: ColorResources.whiteColor
         ),
         child: SingleChildScrollView(
           child: SafeArea(
@@ -80,14 +84,18 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                   sectionTitle("Display"),
                   buildCustomDropdownTile(
                     title: "Theme",
-                    selectedValue: settingsProvider.theme,
-                    options: ["Light", "Dark", "System"],
+                    selectedValue: settingsProvider.theme.toLowerCase(), // "light" | "dark" | "system"
+                    options: {
+                      "light": "Light",
+                      "dark": "Dark",
+                      "system": "System",
+                    },
                     leadingIcon: Icons.brightness_6,
                     onChanged: (val) {
+                      if (val == null) return;
                       setState(() {
-                        settingsProvider.setTheme(val!);
+                        settingsProvider.setTheme(val);
                       });
-                      settingsProvider.setTheme(settingsProvider.theme.toLowerCase()); // ✅ update app theme
                       settingsProvider.updateChatSettings({
                         "theme": settingsProvider.theme.toLowerCase(),
                         "enterIsSend": enterSend,
@@ -191,25 +199,6 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                       });
                     },
                   ),
-                  buildCustomDropdownTile(
-                    title: "Fontsize",
-                    selectedValue: selectedFontsize,
-                    options: ["Small", "Medium", "Large"],
-                    onChanged: (val) {
-                      setState(() {
-                        selectedFontsize = val!;
-                      });
-                      settingsProvider.updateChatSettings({
-                        "theme": settingsProvider.theme.toLowerCase(),
-                        "enterIsSend": enterSend,
-                        "autoPlayAnimatedImages": playAnimatedImages,
-                        "mediaVisibility": mediaVisibility,
-                        "fontSize": selectedFontsize.toLowerCase(),
-                        "voiceMessagesTranscript": voiceTranscript,
-                        "archiveChats": chatsArchive,
-                      });
-                    },
-                  ),
                   buildSwitchTile(
                     title: "Voice messages transcript",
                     subtitle: "Read new voice messages",
@@ -261,7 +250,7 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                       Text(
                         "Chat backup",
                         style: TextStyle(
-                          color: ColorResources.whiteColor,
+                          color:appTheme.toString().toLowerCase()!='dark'?ColorResources.txtColor:  ColorResources.whiteColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -309,8 +298,8 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
 
   Widget buildCustomDropdownTile({
     required String title,
-    required String selectedValue,
-    required List<String> options,
+    required String selectedValue, // must be lowercase: light/dark/system
+    required Map<String, String> options, // key = value, value = display text
     required ValueChanged<String?> onChanged,
     IconData? leadingIcon, // optional leading icon
   }) {
@@ -321,12 +310,12 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
         decoration: BoxDecoration(
           color: Colors.white.withAlpha(13),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white24),
+          border: Border.all(color:appTheme.toString().toLowerCase()!='dark'?ColorResources.appColor:  Colors.white24),
         ),
         child: Row(
           children: [
             if (leadingIcon != null) ...[
-              Icon(leadingIcon, color: ColorResources.whiteColor),
+              Icon(leadingIcon, color:appTheme.toString().toLowerCase()=='dark'?ColorResources.blackColor:  ColorResources.whiteColor),
               const SizedBox(width: 10),
             ],
             Expanded(
@@ -335,16 +324,16 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: ColorResources.whiteColor,
+                    style:  TextStyle(
+                      color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor,
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    selectedValue, // display selected value like subtitle
+                    options[selectedValue] ?? selectedValue,
                     style: TextStyle(
-                      color: ColorResources.subTitleColor,
+                      color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.subTitleColor,
                       fontSize: 14,
                     ),
                   ),
@@ -353,21 +342,21 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
             ),
             DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                dropdownColor: ColorResources.appColor,
-                value: selectedValue,
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                dropdownColor: appTheme.toString().toLowerCase()=='dark'?ColorResources.appColor: ColorResources.whiteColor,
+                value: selectedValue, // always light/dark/system
+                icon:  Icon(Icons.arrow_drop_down, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: Colors.white),
                 style: Styles.semiBoldTextStyle(
                   size: 14,
-                  color: ColorResources.whiteColor,
+                  color:appTheme.toString().toLowerCase()=='dark'?ColorResources.blackColor:  ColorResources.whiteColor,
                 ),
                 onChanged: onChanged,
-                items: options.map((String option) {
+                items: options.entries.map((entry) {
                   return DropdownMenuItem<String>(
-                    value: option,
+                    value: entry.key, // lowercase value
                     child: Text(
-                      option,
+                      entry.value, // display text
                       style: Styles.semiBoldTextStyle(
-                        color: ColorResources.whiteColor,
+                        color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:  ColorResources.whiteColor,
                       ),
                     ),
                   );
@@ -379,4 +368,5 @@ class _ChatSettingsScreenState extends State<ChatSettingsScreen> {
       ),
     );
   }
+
 }

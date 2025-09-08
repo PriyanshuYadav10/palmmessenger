@@ -83,9 +83,11 @@ class _SetUpProfileScreenState extends State<SetUpProfileScreen> {
         builder: (context, authProvider, _) {
         return Scaffold(
           body: Container(
-            decoration: BoxDecoration(
-                image:
-                DecorationImage(image: AssetImage(app_bg), fit: BoxFit.cover)),
+            decoration:appTheme.toString().toLowerCase()=='dark'? BoxDecoration(
+                image: DecorationImage(image: AssetImage(app_bg),fit: BoxFit.cover)
+            ):BoxDecoration(
+                color: ColorResources.whiteColor
+            ),
             padding: const EdgeInsets.symmetric(
               horizontal: 40,
             ),
@@ -96,7 +98,7 @@ class _SetUpProfileScreenState extends State<SetUpProfileScreen> {
                   child: GradientText('Set up your profile',style: Styles.extraBoldTextStyle(size: 35),),
                 ),
                 hSpace(20),
-                Text('Customize your Palm Messenger Identity',textAlign: TextAlign.center ,style: Styles.mediumTextStyle(size: 15,color: ColorResources.whiteColor.withOpacity(0.5)),),
+                Text('Customize your Palm Messenger Identity',textAlign: TextAlign.center ,style: Styles.mediumTextStyle(size: 15,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor.withOpacity(0.5)),),
                 hSpace(15),
                 Stack(
                   alignment: Alignment.bottomCenter,
@@ -124,7 +126,7 @@ class _SetUpProfileScreenState extends State<SetUpProfileScreen> {
                         child: CircleAvatar(
                                           radius: 20,
                                           backgroundColor: ColorResources.blackColor,
-                                          child: Icon(Icons.camera_alt_outlined,color: ColorResources.whiteColor),
+                                          child: Icon(Icons.camera_alt_outlined,color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                                         ),
                       ),
                     )
@@ -142,29 +144,29 @@ class _SetUpProfileScreenState extends State<SetUpProfileScreen> {
                     ),
                     padding: EdgeInsets.all(10),
                     margin: EdgeInsets.symmetric(horizontal: 50,vertical: 15),
-                    child: Text('Change Profile Picture',style: Styles.semiBoldTextStyle(color: ColorResources.whiteColor),),
+                    child: Text('Change Profile Picture',style: Styles.semiBoldTextStyle(color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),),
                   ),
                 ),
                 hSpace(25),
                 Text(
                   'Name',
                   style: Styles.mediumTextStyle(
-                      size: 15, color: ColorResources.whiteColor),
+                      size: 15, color: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 ),
                 hSpace(5),
                 buildTextField(nameCtrl, '',
                     MediaQuery.sizeOf(context).width * 0.57, 45, TextInputType.text,
-                    fun: () {}),
+                    fun: () {},txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 hSpace(15),
                 Text(
                   'About(optional)',
                   style: Styles.mediumTextStyle(
-                      size: 15, color: ColorResources.whiteColor),
+                      size: 15, color:appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor: ColorResources.whiteColor),
                 ),
                 hSpace(5),
                 buildTextField(aboutCtrl, '',
                     MediaQuery.sizeOf(context).width * 0.57, 45, TextInputType.text,
-                    fun: () {}),
+                    fun: () {},txtColor: appTheme.toString().toLowerCase()!='dark'?ColorResources.blackColor:ColorResources.whiteColor),
                 hSpace(50),
                 customButton(() {
                   setUpProfile();
